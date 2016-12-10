@@ -15,15 +15,22 @@ namespace Calculator
     partial class ViewController
     {
         [Outlet]
-        [GeneratedCode ("iOS Designer", "1.0")]
         UIKit.UILabel display { get; set; }
 
-        [Action ("PerformOperation:")]
+        [Outlet]
         [GeneratedCode ("iOS Designer", "1.0")]
+        UIKit.UILabel recentOperations { get; set; }
+
+
+        [Action ("PerformOperation:")]
         partial void PerformOperation (UIKit.UIButton sender);
 
+
+        [Action ("PressDot:")]
+        partial void PressDot (UIKit.UIButton sender);
+
+
         [Action ("TouchDigit:")]
-        [GeneratedCode ("iOS Designer", "1.0")]
         partial void TouchDigit (UIKit.UIButton sender);
 
         void ReleaseDesignerOutlets ()
@@ -31,6 +38,11 @@ namespace Calculator
             if (display != null) {
                 display.Dispose ();
                 display = null;
+            }
+
+            if (recentOperations != null) {
+                recentOperations.Dispose ();
+                recentOperations = null;
             }
         }
     }

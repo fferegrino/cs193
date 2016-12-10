@@ -16,16 +16,9 @@ namespace Calculator
 		partial void TouchDigit(UIButton sender)
 		{
 			var digit = sender.CurrentTitle;
-			if (userIsInTheMiddleOfTyping)
-			{
-				var textCurrentlyInDisplay = display.Text;
-				display.Text = textCurrentlyInDisplay + digit;
-			}
-			else 
-			{
-				display.Text = digit;
-			}
-			brain.SetOperand(DisplayValue);
+			brain.AddOperand(Double.Parse(digit), userIsInTheMiddleOfTyping);
+			DisplayValue = brain.Result;
+			recentOperations.Text = brain.RecentOperations;
 			userIsInTheMiddleOfTyping = true;
 		}
 
@@ -37,6 +30,12 @@ namespace Calculator
 			set { display.Text = value.ToString(); }
 		}
 
+		partial void PressDot(UIButton sender)
+		{
+			var symbol = sender.CurrentTitle;
+			brain.PerformOperation(symbol);
+			DisplayValue = brain.Result;
+		}
 
 		partial void PerformOperation(UIButton sender)
 		{
@@ -44,6 +43,7 @@ namespace Calculator
 			var symbol = sender.CurrentTitle;
 			brain.PerformOperation(symbol);
 			DisplayValue = brain.Result;
+			recentOperations.Text = brain.RecentOperations;
 		}
 	}
 }
