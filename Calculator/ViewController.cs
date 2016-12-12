@@ -17,9 +17,8 @@ namespace Calculator
 		{
 			var digit = sender.CurrentTitle;
 			brain.AddOperand(Double.Parse(digit), userIsInTheMiddleOfTyping);
-			DisplayValue = brain.Result;
-			recentOperations.Text = brain.RecentOperations;
 			userIsInTheMiddleOfTyping = true;
+            SetResult();
 		}
 
 		CalculatorBrain brain = new CalculatorBrain();
@@ -30,20 +29,25 @@ namespace Calculator
 			set { display.Text = value.ToString(); }
 		}
 
+        void SetResult()
+        {
+            DisplayValue = brain.Result;
+            recentOperations.Text = brain.Description +  (brain.IsPartialResult ? "..." : " =");
+        }
+
 		partial void PressDot(UIButton sender)
 		{
 			var symbol = sender.CurrentTitle;
 			brain.PerformOperation(symbol);
-			DisplayValue = brain.Result;
-		}
+            SetResult();
+        }
 
 		partial void PerformOperation(UIButton sender)
 		{
 			userIsInTheMiddleOfTyping = false;
 			var symbol = sender.CurrentTitle;
 			brain.PerformOperation(symbol);
-			DisplayValue = brain.Result;
-			recentOperations.Text = brain.RecentOperations;
-		}
+            SetResult();
+        }
 	}
 }
