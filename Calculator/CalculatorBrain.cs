@@ -2,6 +2,7 @@
 using System;
 using System.Linq;
 using System.Collections.Generic;
+using Foundation;
 
 namespace Calculator
 {
@@ -14,34 +15,18 @@ namespace Calculator
         const int MaxMemory = 10;
 
 
-        internal void AddOperand(double operand, bool userIsInTheMiddleOfTyping)
+		internal void SetOperand(double operand)
         {
-            if (userIsInTheMiddleOfTyping)
-            {
-                if (!_hasSetDot)
-                {
-                    _accumulator = _accumulator * IntegerPositions + operand;
-                }
-                else
-                {
-                    _accumulator = _accumulator + operand / DecimalPositions;
-                    DecimalPositions *= 10;
-                }
-            }
-            else
-            {
-                DecimalPositions = 10;
-                if (!_hasSetDot)
-                {
-                    _accumulator = operand;
-                    //_integerPositions *= 10;
-                }
-                else
-                {
-                    _accumulator = operand / DecimalPositions;
-                    DecimalPositions *= 10;
-                }
-            }
+			_accumulator = operand;
+			if (_pendingOperation != null)
+			{
+				//_description = $"{_description} {_accumulator}";
+			}
+			else 
+			{
+				_description = $"{_accumulator}";
+			}
+			_internalProgram.Add(operand);
         }
 
         enum Operation
@@ -50,7 +35,7 @@ namespace Calculator
             UnaryOperation,
             BinaryOperation,
             Equals,
-            Dot,
+            //Dot,
             Clear
         }
 
@@ -93,8 +78,7 @@ namespace Calculator
             { "÷", Operation.BinaryOperation },
             { "−", Operation.BinaryOperation },
             { "+", Operation.BinaryOperation },
-            { "=", Operation.Equals },
-            { ".", Operation.Dot }
+            { "=", Operation.Equals }
         };
 
         Dictionary<string, double> constants = new Dictionary<string, double>
@@ -124,6 +108,7 @@ namespace Calculator
         internal void PerformOperation(string symbol)
         {
             Operation op;
+			_internalProgram.Add(symbol);
             if (operations.TryGetValue(symbol, out op))
             {
                 AddRecentOp(symbol, op);
@@ -143,12 +128,6 @@ namespace Calculator
                     case Operation.Equals:
                         PerformPendingOperation();
                         break;
-                    case Operation.Dot:
-                        if (!_hasSetDot)
-                        {
-                            _hasSetDot = true;
-                        }
-                        break;
                     case Operation.Clear:
                         Clear();
                         break;
@@ -160,9 +139,9 @@ namespace Calculator
         }
 
         void Clear()
-        {
+		{
+			_internalProgram.Clear();
             _description = null;
-            _hasSetDot = false;
             _accumulator = 0;
             _pendingOperation = null;
             DecimalPositions = 10;
@@ -177,7 +156,6 @@ namespace Calculator
         private Operation? _previousOperation;
         private void AddRecentOp(string symbol, Operation operation)
         {
-
             switch (operation)
             {
                 case Operation.Constant:
@@ -198,14 +176,42 @@ namespace Calculator
                         _previousOperation.Value != Operation.Constant &&
                         _previousOperation.Value != Operation.Equals)
                     {
-                        if (_description != null)
                             _description = $"{_description} {_accumulator}";
                     }
                     break;
                 default:
                     break;
             }
+
         }
+
+		private List<Object> _internalProgram  = new List<Object>();
+		public Object Program { get { return _internalProgram; } set 
+			{
+				Clear();
+				var program = value as List<Object>;
+				if (program != null)
+				{
+					foreach (var item in program)
+					{
+						var symbol = item as string;
+						if (symbol != null)
+						{
+							PerformOperation(symbol);
+							continue;
+						}
+						try
+						{
+							var operand = (double)item;
+							SetOperand(operand);
+						}
+						catch
+						{
+						}
+					}
+				}
+			} 
+		}
 
         internal Double Result
         {
