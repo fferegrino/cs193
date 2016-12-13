@@ -16,6 +16,22 @@ namespace Calculator
 		bool userIsInTheMiddleOfTyping;
 		static readonly string Dot = NumberFormatInfo.CurrentInfo.NumberDecimalSeparator;
 
+
+
+		partial void RestoreMemory(UIKit.UIButton sender)
+		{
+			brain.SetOperand("M");
+			DisplayValue = brain.Result;
+		}
+
+		partial void SaveMemory(UIKit.UIButton sender)
+		{
+			var program = brain.Program;
+			brain.VariableValues["M"] = DisplayValue;
+			brain.Program = program;
+			DisplayValue = brain.Result;
+		}
+
 		partial void TouchDigit(UIButton sender)
 		{
 			 

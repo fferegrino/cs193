@@ -9,23 +9,42 @@ namespace Calculator
     public class CalculatorBrain
     {
         double _accumulator;
-        bool _hasSetDot;
-        double DecimalPositions = 10;
         const double IntegerPositions = 10;
         const int MaxMemory = 10;
 
+		public CalculatorBrain()
+		{
+			VariableValues = new Dictionary<string, double>();
+		}
+
+		string lastVariable = null;
+		internal void SetOperand(string variableName)
+		{
+			double variableValue;
+			VariableValues.TryGetValue(variableName, out variableValue);
+			_accumulator = variableValue;
+
+
+			if(_pendingOperation == null)
+			{
+				_description = $"{variableName}";
+			}
+
+			lastVariable = variableName;
+			_internalProgram.Add(variableName);
+				
+		}
+
+		internal Dictionary<string, double> VariableValues { get; private set;}
 
 		internal void SetOperand(double operand)
         {
 			_accumulator = operand;
-			if (_pendingOperation != null)
-			{
-				//_description = $"{_description} {_accumulator}";
-			}
-			else 
+			if(_pendingOperation == null) 
 			{
 				_description = $"{_accumulator}";
 			}
+			lastVariable = null;
 			_internalProgram.Add(operand);
         }
 
@@ -73,7 +92,8 @@ namespace Calculator
             { "cos", Operation.UnaryOperation  },
             { "sin", Operation.UnaryOperation },
             { "tan", Operation.UnaryOperation  },
-            { "^2", Operation.UnaryOperation },
+			{ "^2", Operation.UnaryOperation },
+			{ "^3", Operation.UnaryOperation },
             { "×", Operation.BinaryOperation },
             { "÷", Operation.BinaryOperation },
             { "−", Operation.BinaryOperation },
@@ -94,7 +114,8 @@ namespace Calculator
             { "cos", Math.Cos },
             { "sin", Math.Sin},
             { "tan", Math.Tan },
-            { "^2", (d) => d * d }
+			{ "^2", (d) => d * d },
+			{ "^3", (d) => d * d }
         };
 
         Dictionary<string, Func<double, double, double>> binaries = new Dictionary<string, Func<double, double, double>>
@@ -111,17 +132,17 @@ namespace Calculator
 			_internalProgram.Add(symbol);
             if (operations.TryGetValue(symbol, out op))
             {
-                AddRecentOp(symbol, op);
+                AddOperationToDescription(symbol, op);
                 switch (op)
                 {
                     case Operation.Constant:
                         _accumulator = constants[symbol];
                         break;
                     case Operation.UnaryOperation:
+						PerformPendingOperation();
                         _accumulator = unaries[symbol](_accumulator);
                         break;
                     case Operation.BinaryOperation:
-                        _hasSetDot = false;
                         PerformPendingOperation();
                         _pendingOperation = new PendingOperationInfo(binaries[symbol], _accumulator);
                         break;
@@ -140,11 +161,12 @@ namespace Calculator
 
         void Clear()
 		{
+			VariableValues.Remove("M");
 			_internalProgram.Clear();
             _description = null;
             _accumulator = 0;
+			_previousOperation = null;
             _pendingOperation = null;
-            DecimalPositions = 10;
         }
 
         private string _description;
@@ -154,7 +176,7 @@ namespace Calculator
 
 
         private Operation? _previousOperation;
-        private void AddRecentOp(string symbol, Operation operation)
+		private void AddOperationToDescription(string symbol, Operation operation)
         {
             switch (operation)
             {
@@ -165,6 +187,11 @@ namespace Calculator
                         _description = $"{symbol}";
                     break;
                 case Operation.UnaryOperation:
+					if (lastVariable != null)
+					{
+						_description += " " + lastVariable;
+						lastVariable = null;
+					}
                     _description = $" {symbol} ({_description ?? _accumulator.ToString()})";
                     break;
                 case Operation.BinaryOperation:
@@ -172,12 +199,20 @@ namespace Calculator
                     _description = $"({_description ?? _accumulator.ToString()}) {symbol} ";
                     break;
                 case Operation.Equals:
-                    if (_previousOperation.HasValue && 
-                        _previousOperation.Value != Operation.Constant &&
-                        _previousOperation.Value != Operation.Equals)
-                    {
-                            _description = $"{_description} {_accumulator}";
-                    }
+					if (_previousOperation.HasValue)
+					{
+						if (lastVariable != null)
+						{
+							_description = $"{_description} {lastVariable}";
+							lastVariable = null;
+						}
+						else if(_previousOperation.Value != Operation.Constant &&
+						_previousOperation.Value != Operation.Equals)
+						{
+							_description = $"{_description} {_accumulator}";
+						}
+
+					}
                     break;
                 default:
                     break;
@@ -185,8 +220,9 @@ namespace Calculator
 
         }
 
+
 		private List<Object> _internalProgram  = new List<Object>();
-		public Object Program { get { return _internalProgram; } set 
+		public Object Program { get { return new List<object>(_internalProgram); } set 
 			{
 				Clear();
 				var program = value as List<Object>;
@@ -194,16 +230,25 @@ namespace Calculator
 				{
 					foreach (var item in program)
 					{
+						System.Diagnostics.Debug.WriteLine($"Prev {_previousOperation} Current {item}");
 						var symbol = item as string;
-						if (symbol != null)
+						if (symbol != null && operations.ContainsKey(symbol))
 						{
 							PerformOperation(symbol);
 							continue;
 						}
+
+						if(symbol != null)
+						{
+							SetOperand(symbol);
+							continue;
+						}
+
 						try
 						{
 							var operand = (double)item;
-							SetOperand(operand);
+							if (_previousOperation == null || _previousOperation == Operation.BinaryOperation)
+								SetOperand(operand);
 						}
 						catch
 						{
