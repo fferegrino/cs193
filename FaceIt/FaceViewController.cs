@@ -68,6 +68,32 @@ namespace FaceIt
             }
         }
 
+		partial void ToggleEyes(UITapGestureRecognizer recognizer)
+		{
+			if (recognizer.State == UIGestureRecognizerState.Ended)
+			{
+				var newEyes = Expression.Eyes;
+				switch (Expression.Eyes)
+				{
+					case Eyes.Closed:
+						newEyes = Eyes.Open;
+						break;
+					case Eyes.Open:
+						newEyes = Eyes.Closed;
+						break;
+					default:
+						break;
+				}
+
+            	Expression = new FacialExpression
+				{
+					Mouth = Expression.Mouth,
+					EyeBrows = Expression.EyeBrows,
+					Eyes = newEyes
+				};
+			}
+		}
+
         private void IncreaseHappiness()
         {
             Expression = new FacialExpression
