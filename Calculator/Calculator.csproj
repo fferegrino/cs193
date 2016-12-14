@@ -114,6 +114,10 @@
     <Compile Include="CalculatorViewController.designer.cs">
       <DependentUpon>CalculatorViewController.cs</DependentUpon>
     </Compile>
+    <Compile Include="GraphViewController.cs" />
+    <Compile Include="GraphViewController.designer.cs">
+      <DependentUpon>GraphViewController.cs</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Main.cs" />

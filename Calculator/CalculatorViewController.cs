@@ -146,5 +146,27 @@ namespace Calculator
 			_hasSetDot = false;
 			_hasDot = false;
 		}
+
+		public override void PrepareForSegue(UIStoryboardSegue segue, NSObject sender)
+		{
+			if (segue.Identifier.Equals("graph"))
+			{
+				var navigation = segue.DestinationViewController as UINavigationController;
+				GraphViewController graphViewController;
+				if (navigation != null)
+				{
+					graphViewController = navigation.VisibleViewController as GraphViewController;
+				}
+				else
+				{
+					graphViewController = segue.DestinationViewController as GraphViewController;
+				}
+
+				if (graphViewController != null)
+				{
+					graphViewController.NavigationItem.Title = brain.Description;
+				}
+			}
+		}
     }
 }
