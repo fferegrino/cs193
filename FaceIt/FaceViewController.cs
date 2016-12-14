@@ -152,18 +152,21 @@ namespace FaceIt
 
         void UpdateUI()
         {
-            switch (Expression.Eyes)
-            {
-                case Eyes.Open:
-                    FaceView.EyesOpen = true;
-                    break;
-                case Eyes.Closed:
-                case Eyes.Squinting:
-                    FaceView.EyesOpen = false;
-                    break;
-            }
-            FaceView.MouthCurvature = mouthCurvatures[Expression.Mouth];
-            FaceView.EyeBrowTilt = eyeBrowsTilts[Expression.EyeBrows];
+			if (FaceView != null)
+			{
+				switch (Expression.Eyes)
+				{
+					case Eyes.Open:
+						FaceView.EyesOpen = true;
+						break;
+					case Eyes.Closed:
+					case Eyes.Squinting:
+						FaceView.EyesOpen = false;
+						break;
+				}
+				FaceView.MouthCurvature = mouthCurvatures[Expression.Mouth];
+				FaceView.EyeBrowTilt = eyeBrowsTilts[Expression.EyeBrows];
+			}
         }
     }
 }
