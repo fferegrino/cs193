@@ -64,6 +64,11 @@ namespace FaceIt
                 sadderSwipeGestureRecognizer.Direction = UISwipeGestureRecognizerDirection.Down;
                 _faceView.AddGestureRecognizer(sadderSwipeGestureRecognizer);
 
+				var rotationGestureRecognizer = new UIRotationGestureRecognizer();
+				rotationGestureRecognizer.AddTarget(() => ChangeBrows(rotationGestureRecognizer));
+				//rotationGestureRecognizer.AddTarget(() => ChangeBrows(gesture));
+				_faceView.AddGestureRecognizer(rotationGestureRecognizer);
+
                 UpdateUI();
             }
         }
@@ -92,6 +97,37 @@ namespace FaceIt
 					Eyes = newEyes
 				};
 			}
+		}
+
+		public void ChangeBrows(UIRotationGestureRecognizer recognizer)
+		{
+			var newEyeBrows = Expression.EyeBrows;
+
+			switch (recognizer.State)
+			{
+				case UIGestureRecognizerState.Changed:
+				case UIGestureRecognizerState.Ended:
+					if (recognizer.Rotation > Math.PI / 6)
+					{
+						newEyeBrows = newEyeBrows.MoreRelaxedBrow();
+						recognizer.Rotation = 0;
+					}
+					else if (recognizer.Rotation < -1 * Math.PI / 6)
+					{
+						newEyeBrows = newEyeBrows.MoreFurrowedBrow();
+						recognizer.Rotation = 0;
+					}
+					break;
+				default:
+					break;
+			}
+
+			Expression = new FacialExpression
+			{
+				Mouth = Expression.Mouth,
+				EyeBrows = newEyeBrows,
+				Eyes = Expression.Eyes
+			};
 		}
 
         private void IncreaseHappiness()

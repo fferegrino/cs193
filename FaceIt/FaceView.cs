@@ -71,7 +71,6 @@ namespace FaceIt
         }
 
 
-
         public void ChangeScale(UIPinchGestureRecognizer recognizer)
         {
             switch (recognizer.State)
@@ -88,7 +87,8 @@ namespace FaceIt
 
         double SkullRadius => Math.Min(Bounds.Size.Width, Bounds.Size.Height) / 2 * Scale;
 
-        CGPoint SkullCenter => new CGPoint(Bounds.GetMidX(), Bounds.GetMidY());
+
+		CGPoint SkullCenter => new CGPoint(Bounds.GetMidX(), Bounds.GetMidY());
 
         struct Ratios
         {
