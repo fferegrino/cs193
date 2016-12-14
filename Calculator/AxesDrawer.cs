@@ -51,12 +51,12 @@ namespace Calculator
 
 				var path = new UIBezierPath();
 
-		//			path.MoveTo(new CGPoint(x: bounds.GetMinX(), y: align(origin.y)))
-		//path.addLineToPoint(CGPoint(x: bounds.maxX, y: align(origin.y)))
-		//path.moveToPoint(CGPoint(x: align(origin.x), y: bounds.minY))
-		//path.addLineToPoint(CGPoint(x: align(origin.x), y: bounds.maxY))
-		//path.stroke()
-		//drawHashmarksInRect(bounds, origin: origin, pointsPerUnit: abs(pointsPerUnit))
+				path.MoveTo(new CGPoint(x: bounds.GetMinX(), y: Align(origin.Y)));
+				path.AddLineTo(new CGPoint(x: bounds.GetMaxY(), y: Align(origin.Y)));
+				path.MoveTo(new CGPoint(x: Align(origin.X), y: bounds.GetMinY()));
+				path.AddLineTo(new CGPoint(x: Align(origin.X), y: bounds.GetMaxX()));
+				path.Stroke();
+				DrawHashmarksInRect(bounds, origin: origin, pointsPerUnit: Abs(pointsPerUnit));
 
 				context.RestoreState();
 			}
@@ -118,19 +118,23 @@ namespace Calculator
 						DrawHashmarkAtLocation(leftHashmarkPoint.Value, AnchoredText.Top("-\\(label)"));
 
 					}
-					//	if let rightHashmarkPoint = alignedPoint(x: bbox.maxX, y: origin.y, insideBounds: bounds) {
-					//		drawHashmarkAtLocation(rightHashmarkPoint, .Top(label))
+					var rightHashmarkPoint = AlignedPoint(x: bbox.GetMaxX(), y: origin.Y, insideBounds: bounds);
+					if (rightHashmarkPoint != null)
+					{
+						DrawHashmarkAtLocation(rightHashmarkPoint.Value, AnchoredText.Top(label));
+					}
+					var topHashmarkPoint = AlignedPoint(x: origin.X, y: bbox.GetMinY(), insideBounds: bounds);
+					if (topHashmarkPoint != null)
+					{
+						DrawHashmarkAtLocation(topHashmarkPoint.Value, AnchoredText.Left(label));
+					}
+					var bottomHashmarkPoint = AlignedPoint(x: origin.X, y: bbox.GetMaxY(), insideBounds: bounds);
+					if (bottomHashmarkPoint != null)
+					{
+						DrawHashmarkAtLocation(bottomHashmarkPoint.Value, AnchoredText.Left("-\\(label)"));
 
-					//}
-					//	if let topHashmarkPoint = alignedPoint(x: origin.x, y: bbox.minY, insideBounds: bounds) {
-					//		drawHashmarkAtLocation(topHashmarkPoint, .Left(label))
-
-					//}
-					//	if let bottomHashmarkPoint = alignedPoint(x: origin.x, y: bbox.maxY, insideBounds: bounds) {
-					//		drawHashmarkAtLocation(bottomHashmarkPoint, .Left("-\(label)"))
-
-					//}
-					//	bbox.insetInPlace(dx: -pointsPerHashmark, dy: -pointsPerHashmark)
+					}
+					bbox.Inset(dx: (System.nfloat)(-1 * pointsPerHashmark), dy: (System.nfloat)(-1 * pointsPerHashmark));
 
 				}
 			}
@@ -138,35 +142,30 @@ namespace Calculator
 
 		private void DrawHashmarkAtLocation(CGPoint location, AnchoredText text)
 		{
-		//	var dx: CGFloat = 0, dy: CGFloat = 0
+			var dx = 0.0;
+			var dy = 0.0;
+			switch (text.Anchor)
+			{
+				case TextAnchor.Left:
+					dx = Constants.HashmarkSize / 2;
+					break;
+				case TextAnchor.Right:
+					dx = Constants.HashmarkSize / 2;
+					break;
+				case TextAnchor.Top:
+					dy = Constants.HashmarkSize / 2;
+					break;
+				case TextAnchor.Bottom:
+					dy = Constants.HashmarkSize / 2;
+					break;
+			}
+			var path = new UIBezierPath();
+			path.MoveTo(new CGPoint(x: location.X - dx, y: location.Y - dy));
+			path.AddLineTo(new CGPoint(x: location.X + dx, y: location.Y + dy));
+			path.Stroke();
 
-		//switch text {
-		//		case .Left:
-		//			dx = Constants.HashmarkSize / 2
-
-		//	case .Right:
-		//			dx = Constants.HashmarkSize / 2
-
-		//	case .Top:
-		//			dy = Constants.HashmarkSize / 2
-
-		//	case .Bottom:
-		//			dy = Constants.HashmarkSize / 2
-
-		//}
-
-		//	let path = UIBezierPath()
-
-		//path.moveToPoint(CGPoint(x: location.x - dx, y: location.y - dy))
-
-		//path.addLineToPoint(CGPoint(x: location.x + dx, y: location.y + dy))
-
-		//path.stroke()
-
-
-		//text.drawAnchoredToPoint(location, color: color)
-
-	}
+			text.DrawAnchoredToPoint(location, color);
+		}
 
 		enum TextAnchor
 		{
@@ -215,10 +214,10 @@ namespace Calculator
 				private set;
 			}
 
-			public void DrawAnchoredToPoint(CGPoint location , UIColor color)
+			public void DrawAnchoredToPoint(CGPoint location, UIColor color)
 			{
-				
-				var attributes = new UIStringAttributes 
+
+				var attributes = new UIStringAttributes
 				{
 					Font = UIFont.PreferredFootnote,
 					ForegroundColor = color
@@ -232,22 +231,22 @@ namespace Calculator
 				{
 					case TextAnchor.Top:
 						textRect.Y += (nfloat)(textRect.Size.Height / 2 + AnchoredText.VerticalOffset);
-					break;
-				case TextAnchor.Left:
+						break;
+					case TextAnchor.Left:
 						textRect.X += (nfloat)(textRect.Size.Width / 2 + AnchoredText.HorizontalOffset);
-					break;
-				case TextAnchor.Bottom:
+						break;
+					case TextAnchor.Bottom:
 						textRect.Y -= (nfloat)(textRect.Size.Height / 2 + AnchoredText.VerticalOffset);
-					break;
-				case TextAnchor.Right:
+						break;
+					case TextAnchor.Right:
 						textRect.X -= (nfloat)(textRect.Size.Width / 2 + AnchoredText.HorizontalOffset);
-					break;
-			}
+						break;
+				}
 
 				text.DrawString(textRect, attributes);
 				//text.drawInRect(textRect, withAttributes: attributes)
 
-		}
+			}
 
 		}
 
@@ -259,7 +258,7 @@ namespace Calculator
 		CGPoint? AlignedPoint(nfloat x, nfloat y, CGRect insideBounds)
 		{
 			var point = new CGPoint(x: Align(x), y: Align(y));
-				var permissibleBounds = insideBounds;
+			var permissibleBounds = insideBounds;
 			if (permissibleBounds.Contains(point))
 				return null;
 			//if let permissibleBounds = insideBounds where !CGRectContainsPoint(permissibleBounds, point) {
@@ -272,5 +271,5 @@ namespace Calculator
 		{
 			return Round(x * contentScaleFactor) / contentScaleFactor;
 		}
-}
+	}
 }

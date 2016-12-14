@@ -1,15 +1,15 @@
-﻿using System;
-using System.Globalization;
+using Foundation;
+using System;
 using UIKit;
+using System.Globalization;
 
 namespace Calculator
 {
-	public partial class ViewController : UIViewController
-	{
-		protected ViewController(IntPtr handle) : base(handle)
-		{
-			// Note: this .ctor should not contain any initialization logic.
-		}
+    public partial class CalculatorViewController : UIViewController
+    {
+        public CalculatorViewController (IntPtr handle) : base (handle)
+        {
+        }
 
 		public override void ViewDidLoad()
 		{
@@ -63,23 +63,23 @@ namespace Calculator
 
 		partial void TouchDigit(UIButton sender)
 		{
-			 
+
 			var digit = sender.CurrentTitle;
 			if (userIsInTheMiddleOfTyping)
-	      {
+			{
 				var textCurrentlyInDisplay = display.Text;
 				if (_hasDot && !DisplayHasDot)
 				{
-					display.Text = textCurrentlyInDisplay +  Dot + digit;
+					display.Text = textCurrentlyInDisplay + Dot + digit;
 					_hasSetDot = true;
 				}
-				else 
+				else
 				{
 
 					display.Text = textCurrentlyInDisplay + digit;
 				}
 			}
-			else 	
+			else
 			{
 				if (_hasDot && !DisplayHasDot)
 				{
@@ -90,10 +90,10 @@ namespace Calculator
 				{
 					display.Text = digit;
 				}
-			}        
+			}
 			brain.SetOperand(DisplayValue);
 			userIsInTheMiddleOfTyping = true;
-            SetResult();
+			SetResult();
 		}
 
 		CalculatorBrain brain = new CalculatorBrain();
@@ -106,12 +106,12 @@ namespace Calculator
 
 		bool DisplayHasDot => _hasSetDot;
 
-        void SetResult()
-        {
-            DisplayValue = brain.Result;
-			if(!System.String.IsNullOrEmpty( brain.Description))
-            	recentOperations.Text = brain.Description +  (brain.IsPartialResult ? "..." : " =");
-        }
+		void SetResult()
+		{
+			DisplayValue = brain.Result;
+			if (!System.String.IsNullOrEmpty(brain.Description))
+				recentOperations.Text = brain.Description + (brain.IsPartialResult ? "..." : " =");
+		}
 		bool _hasDot;
 		bool _hasSetDot;
 		partial void PressDot(UIButton sender)
@@ -121,7 +121,7 @@ namespace Calculator
 				_hasDot = true;
 			}
 
-        }
+		}
 
 		partial void PerformOperation(UIButton sender)
 		{
@@ -133,18 +133,18 @@ namespace Calculator
 				case "=":
 					Clear();
 					break;
-					
+
 			}
 			brain.PerformOperation(symbol);
 			if (brain.IsPartialResult)
 				Clear();
-            SetResult();
-        }
+			SetResult();
+		}
 
 		private void Clear()
 		{
 			_hasSetDot = false;
 			_hasDot = false;
 		}
-	}
+    }
 }

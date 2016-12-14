@@ -11,38 +11,39 @@ using UIKit;
 
 namespace Calculator
 {
-    [Register ("ViewController")]
-    partial class ViewController
+    [Register ("CalculatorViewController")]
+    partial class CalculatorViewController
     {
         [Outlet]
+        [GeneratedCode ("iOS Designer", "1.0")]
         UIKit.UILabel display { get; set; }
 
-
         [Outlet]
+        [GeneratedCode ("iOS Designer", "1.0")]
         UIKit.UILabel recentOperations { get; set; }
 
-
         [Action ("PerformOperation:")]
+        [GeneratedCode ("iOS Designer", "1.0")]
         partial void PerformOperation (UIKit.UIButton sender);
 
-
         [Action ("PressDot:")]
+        [GeneratedCode ("iOS Designer", "1.0")]
         partial void PressDot (UIKit.UIButton sender);
 
-
         [Action ("RestoreMemory:")]
+        [GeneratedCode ("iOS Designer", "1.0")]
         partial void RestoreMemory (UIKit.UIButton sender);
 
-
         [Action ("SaveMemory:")]
+        [GeneratedCode ("iOS Designer", "1.0")]
         partial void SaveMemory (UIKit.UIButton sender);
 
-
         [Action ("TouchDigit:")]
+        [GeneratedCode ("iOS Designer", "1.0")]
         partial void TouchDigit (UIKit.UIButton sender);
 
-
         [Action ("Undo")]
+        [GeneratedCode ("iOS Designer", "1.0")]
         partial void Undo ();
 
         void ReleaseDesignerOutlets ()
