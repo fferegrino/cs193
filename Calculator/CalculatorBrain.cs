@@ -31,7 +31,7 @@ namespace Calculator
 			}
 
 			lastVariable = variableName;
-			_internalProgram.Enqueue(variableName);
+			_internalProgram.Push(variableName);
 				
 		}
 
@@ -45,13 +45,14 @@ namespace Calculator
 				_description = $"{_accumulator}";
 			}
 			lastVariable = null;
-			_internalProgram.Enqueue(operand);
+			_internalProgram.Push(operand);
         }
 
         enum Operation
         {
             Constant,
-            UnaryOperation,
+			UnaryOperation,
+			UnaryOperationPostFix,
             BinaryOperation,
             Equals,
             Clear
@@ -91,8 +92,8 @@ namespace Calculator
             { "cos", Operation.UnaryOperation  },
             { "sin", Operation.UnaryOperation },
             { "tan", Operation.UnaryOperation  },
-			{ "^2", Operation.UnaryOperation },
-			{ "^3", Operation.UnaryOperation },
+			{ "^2", Operation.UnaryOperationPostFix },
+			{ "^3", Operation.UnaryOperationPostFix },
             { "×", Operation.BinaryOperation },
             { "÷", Operation.BinaryOperation },
             { "−", Operation.BinaryOperation },
@@ -103,7 +104,7 @@ namespace Calculator
         internal void PerformOperation(string symbol)
         {
             Operation op;
-			_internalProgram.Enqueue(symbol);
+			_internalProgram.Push(symbol);
             if (operations.TryGetValue(symbol, out op))
             {
                 AddOperationToDescription(symbol, op);
@@ -112,7 +113,8 @@ namespace Calculator
                     case Operation.Constant:
                         _accumulator = constants[symbol];
                         break;
-                    case Operation.UnaryOperation:
+					case Operation.UnaryOperation:
+					case Operation.UnaryOperationPostFix:
 						PerformPendingOperation();
                         _accumulator = unaries[symbol](_accumulator);
                         break;
@@ -160,17 +162,22 @@ namespace Calculator
                     else
                         _description = $"{symbol}";
                     break;
-                case Operation.UnaryOperation:
+				case Operation.UnaryOperation:
+				case Operation.UnaryOperationPostFix:
 					if (lastVariable != null)
 					{
 						_description += " " + lastVariable;
 						lastVariable = null;
 					}
-                    _description = $" {symbol} ({_description ?? _accumulator.ToString()})";
+					if(operation== Operation.UnaryOperation)
+                    	_description = $" {symbol}({_description ?? _accumulator.ToString()})";
+					else
+						_description = $"({_description ?? _accumulator.ToString()}){symbol}";
+						
                     break;
                 case Operation.BinaryOperation:
                     if (IsPartialResult) break;
-                    _description = $"({_description ?? _accumulator.ToString()}) {symbol} ";
+                    _description = $"{_description ?? _accumulator.ToString()} {symbol} ";
                     break;
                 case Operation.Equals:
 					if (_previousOperation.HasValue)
@@ -194,16 +201,26 @@ namespace Calculator
 
         }
 
-		public void ReRunProgram()
+
+		internal void UndoLastOperation()
 		{
-			
+			if (_internalProgram.Count != 0)
+				_internalProgram.Pop();//throw new NotImplementedException();
+			else
+				System.Diagnostics.Debug.WriteLine("No hay más operaciones");
 		}
 
-		private Queue<Object> _internalProgram  = new Queue<Object>();
-		public Object Program { get { return new Queue<object>(_internalProgram); } set 
+		public void ReRunProgram()
+		{
+			var newProgram = Program;
+			Program = newProgram;
+		}
+
+		private Stack<Object> _internalProgram  = new Stack<Object>();
+		public Object Program { get { return new Stack<object>(_internalProgram); } set 
 			{
 				Clear();
-				var program = value as Queue<Object>;
+				var program = value as Stack<Object>;
 				if (program != null)
 				{
 					foreach (var item in program)
@@ -216,7 +233,7 @@ namespace Calculator
 							continue;
 						}
 
-						if(symbol != null)
+						if (symbol != null)
 						{
 							SetOperand(symbol);
 							continue;

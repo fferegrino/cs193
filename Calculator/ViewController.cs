@@ -27,16 +27,24 @@ namespace Calculator
 			if (userIsInTheMiddleOfTyping)
 			{
 				var l = display.Text.Length;
-				if (l > 0)
+				if (l == 1)
+				{
+					brain.UndoLastOperation();
+					display.Text = "0";
+					userIsInTheMiddleOfTyping = false;
+				}
+				else if (l > 1)
 				{
 					display.Text = display.Text.Substring(0, l - 1);
 				}
+				brain.SetOperand(DisplayValue);
 			}
 			else 
 			{
 				brain.UndoLastOperation();
-				brain.Program = brain.Program;
+				brain.ReRunProgram();
 			}
+			SetResult();
 		}
 
 		partial void RestoreMemory(UIKit.UIButton sender)
