@@ -7,7 +7,7 @@ namespace FaceIt
 {
     public partial class FaceViewController : UIViewController
     {
-        public FaceViewController (IntPtr handle) : base (handle)
+        public FaceViewController(IntPtr handle) : base(handle)
         {
         }
 
@@ -41,10 +41,12 @@ namespace FaceIt
             { EyeBrows.Normal, 0 }
         };
 
-        public override void ViewDidAppear(bool animated)
+        FaceView _faceView;
+        [Outlet]
+        FaceView FaceView
         {
-            base.ViewDidAppear(animated);
-            UpdateUI();
+            get { return _faceView; }
+            set { _faceView = value; UpdateUI(); }
         }
 
         void UpdateUI()

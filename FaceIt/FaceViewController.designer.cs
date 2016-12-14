@@ -14,9 +14,6 @@ namespace FaceIt
     [Register ("FaceViewController")]
     partial class FaceViewController
     {
-        [Outlet]
-        [GeneratedCode ("iOS Designer", "1.0")]
-        FaceIt.FaceView FaceView { get; set; }
 
         void ReleaseDesignerOutlets ()
         {
