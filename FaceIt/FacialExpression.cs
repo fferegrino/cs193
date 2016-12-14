@@ -1,5 +1,6 @@
 
 using System;
+using System.Linq;
 
 namespace FaceIt
 {
@@ -38,51 +39,27 @@ namespace FaceIt
     {
         public static EyeBrows MoreRelaxedBrow(this EyeBrows brow)
         {
-            try
-            {
-                return (EyeBrows)(((int)brow) - 1);
-            }
-            catch
-            {
-                return EyeBrows.Relaxed;
-            }
+            var newValue = (((int)brow) - 1);
+            return (EyeBrows)Math.Max(0, newValue);
         }
 
 
         public static EyeBrows MoreFurrowedBrow(this EyeBrows brow)
         {
-            try
-            {
-                return (EyeBrows)(((int)brow) + 1);
-            }
-            catch
-            {
-                return EyeBrows.Furrowed;
-            }
+            var vals = Enum.GetValues(typeof(EyeBrows)) as int[];
+            return (EyeBrows)Math.Min((((int)brow) + 1), vals.Max());
         }
 
         public static Mouth SadderMouth(this Mouth mouth)
         {
-            try
-            {
-                return (Mouth)(((int)mouth) - 1);
-            }
-            catch
-            {
-                return Mouth.Frown;
-            }
+            var newValue = (((int)mouth) - 1);
+            return (Mouth)Math.Max(0, newValue);
         }
 
         public static Mouth HappierMouth(this Mouth mouth)
         {
-            try
-            {
-                return (Mouth)(((int)mouth) + 1);
-            }
-            catch
-            {
-                return Mouth.Smile;
-            }
+            var vals = Enum.GetValues(typeof(Mouth)) as int[];
+            return (Mouth)Math.Min((((int)mouth) + 1), vals.Max());
         }
     }
 }

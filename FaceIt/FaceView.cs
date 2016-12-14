@@ -70,6 +70,22 @@ namespace FaceIt
             set { _color = value; SetNeedsDisplay(); }
         }
 
+
+
+        public void ChangeScale(UIPinchGestureRecognizer recognizer)
+        {
+            switch (recognizer.State)
+            {
+                case UIGestureRecognizerState.Changed:
+                case UIGestureRecognizerState.Ended:
+                    Scale *= recognizer.Scale;
+                    recognizer.Scale = 1;
+                    break;
+                default:
+                    break;
+            }
+        }
+
         double SkullRadius => Math.Min(Bounds.Size.Width, Bounds.Size.Height) / 2 * Scale;
 
         CGPoint SkullCenter => new CGPoint(Bounds.GetMidX(), Bounds.GetMidY());

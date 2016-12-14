@@ -46,7 +46,46 @@ namespace FaceIt
         FaceView FaceView
         {
             get { return _faceView; }
-            set { _faceView = value; UpdateUI(); }
+            set
+            {
+                _faceView = value;
+                // didSet:
+                var gesture = new UIPinchGestureRecognizer();
+                gesture.AddTarget(() => _faceView.ChangeScale(gesture));
+                _faceView.AddGestureRecognizer(gesture);
+
+                var happierSwipeGestureRecognizer = new UISwipeGestureRecognizer();
+                happierSwipeGestureRecognizer.AddTarget(() => IncreaseHappiness());
+                happierSwipeGestureRecognizer.Direction = UISwipeGestureRecognizerDirection.Up;
+                _faceView.AddGestureRecognizer(happierSwipeGestureRecognizer);
+
+                var sadderSwipeGestureRecognizer = new UISwipeGestureRecognizer();
+                sadderSwipeGestureRecognizer.AddTarget(() => DecreaseHappiness());
+                sadderSwipeGestureRecognizer.Direction = UISwipeGestureRecognizerDirection.Down;
+                _faceView.AddGestureRecognizer(sadderSwipeGestureRecognizer);
+
+                UpdateUI();
+            }
+        }
+
+        private void IncreaseHappiness()
+        {
+            Expression = new FacialExpression
+            {
+                Mouth = Expression.Mouth.HappierMouth(),
+                EyeBrows = Expression.EyeBrows,
+                Eyes = Expression.Eyes
+            };
+        }
+
+        private void DecreaseHappiness()
+        {
+            Expression = new FacialExpression
+            {
+                Mouth = Expression.Mouth.SadderMouth(),
+                EyeBrows = Expression.EyeBrows,
+                Eyes = Expression.Eyes
+            };
         }
 
         void UpdateUI()
