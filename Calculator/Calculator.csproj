@@ -109,6 +109,7 @@
     <Compile Include="CalculatorBrain.cs" />
     <None Include="packages.config" />
     <Compile Include="CalculatorBrainDictionaries.cs" />
+    <Compile Include="AxesDrawer.cs" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Main.cs" />
