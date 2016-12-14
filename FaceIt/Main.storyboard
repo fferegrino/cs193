@@ -9,7 +9,7 @@
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
-        <!--Item-->
+        <!--Emotions-->
         <scene sceneID="eTk-ac-N2D">
             <objects>
                 <viewController id="AkU-ea-R8n" customClass="EmotionsViewController" sceneMemberID="viewController">
@@ -29,7 +29,7 @@
                                         <fontDescription key="fontDescription" type="system" pointSize="40"/>
                                         <state key="normal" title="Angry"/>
                                         <connections>
-                                            <segue destination="BYZ-38-t0r" kind="showDetail" identifier="angry" id="lh6-to-9wY"/>
+                                            <segue destination="3T4-It-1KN" kind="showDetail" identifier="angry" id="lh6-to-9wY"/>
                                         </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="FgG-Ae-rJq">
@@ -37,7 +37,7 @@
                                         <fontDescription key="fontDescription" type="system" pointSize="40"/>
                                         <state key="normal" title="Happy"/>
                                         <connections>
-                                            <segue destination="BYZ-38-t0r" kind="showDetail" identifier="happy" id="EJI-jC-gX6"/>
+                                            <segue destination="3T4-It-1KN" kind="showDetail" identifier="happy" id="EJI-jC-gX6"/>
                                         </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Ri6-fQ-Lfp">
@@ -45,7 +45,7 @@
                                         <fontDescription key="fontDescription" type="system" pointSize="40"/>
                                         <state key="normal" title="Worried"/>
                                         <connections>
-                                            <segue destination="BYZ-38-t0r" kind="showDetail" identifier="worried" id="wbX-Rh-Eea"/>
+                                            <segue destination="3T4-It-1KN" kind="showDetail" identifier="worried" id="wbX-Rh-Eea"/>
                                         </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="uED-Dl-So0">
@@ -53,7 +53,7 @@
                                         <fontDescription key="fontDescription" type="system" pointSize="40"/>
                                         <state key="normal" title="Mischievious"/>
                                         <connections>
-                                            <segue destination="BYZ-38-t0r" kind="showDetail" id="sWE-Xn-w5o"/>
+                                            <segue destination="3T4-It-1KN" kind="showDetail" identifier="mischievious" id="sWE-Xn-w5o"/>
                                         </connections>
                                     </button>
                                 </subviews>
@@ -65,26 +65,26 @@
                             <constraint firstItem="4wf-0T-jF3" firstAttribute="centerX" secondItem="dEw-3n-p7e" secondAttribute="centerX" id="dkD-Gv-NZe"/>
                         </constraints>
                     </view>
-                    <tabBarItem key="tabBarItem" title="Item" id="kfA-17-kF0"/>
+                    <navigationItem key="navigationItem" title="Emotions" id="dyF-LQ-CRB"/>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="lH0-fT-tpB" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-1777" y="887"/>
+            <point key="canvasLocation" x="-839.20000000000005" y="886.50674662668678"/>
         </scene>
         <!--Split View Controller-->
         <scene sceneID="fr5-Tz-WZu">
             <objects>
                 <splitViewController id="oey-tb-Pyo" sceneMemberID="viewController">
                     <connections>
-                        <segue destination="AkU-ea-R8n" kind="relationship" relationship="masterViewController" id="G88-x4-6ki"/>
-                        <segue destination="BYZ-38-t0r" kind="relationship" relationship="detailViewController" id="CHS-o8-Pw8"/>
+                        <segue destination="Xxd-OX-1tr" kind="relationship" relationship="masterViewController" id="G88-x4-6ki"/>
+                        <segue destination="3T4-It-1KN" kind="relationship" relationship="detailViewController" id="CHS-o8-Pw8"/>
                     </connections>
                 </splitViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="YwN-tS-AMo" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="-2854" y="1194"/>
         </scene>
-        <!--Item-->
+        <!--Face View Controller-->
         <scene sceneID="tne-QT-ifu">
             <objects>
                 <viewController id="BYZ-38-t0r" customClass="FaceViewController" sceneMemberID="viewController">
@@ -97,7 +97,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <view contentMode="redraw" translatesAutoresizingMaskIntoConstraints="NO" id="3" customClass="FaceView">
-                                <rect key="frame" x="0.0" y="20" width="375" height="647"/>
+                                <rect key="frame" x="0.0" y="64" width="375" height="603"/>
                                 <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <connections>
                                     <outletCollection property="gestureRecognizers" destination="15" appends="YES" id="16"/>
@@ -112,7 +112,7 @@
                             <constraint firstItem="3" firstAttribute="top" secondItem="y3c-jy-aDJ" secondAttribute="bottom" id="11"/>
                         </constraints>
                     </view>
-                    <tabBarItem key="tabBarItem" title="Item" id="a8s-Ei-q5G"/>
+                    <navigationItem key="navigationItem" id="124-bJ-NfJ"/>
                     <connections>
                         <outlet property="FaceView" destination="3" id="name-outlet-3"/>
                     </connections>
@@ -124,10 +124,48 @@
                     </connections>
                 </tapGestureRecognizer>
             </objects>
-            <point key="canvasLocation" x="-1778" y="1642"/>
+            <point key="canvasLocation" x="-839" y="1667"/>
+        </scene>
+        <!--Item-->
+        <scene sceneID="CJd-Lt-gn2">
+            <objects>
+                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="Xxd-OX-1tr" sceneMemberID="viewController">
+                    <tabBarItem key="tabBarItem" title="Item" id="kfA-17-kF0"/>
+                    <toolbarItems/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="nRj-G2-l7w">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <nil name="viewControllers"/>
+                    <connections>
+                        <segue destination="AkU-ea-R8n" kind="relationship" relationship="rootViewController" id="2R7-aT-DqV"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="cI4-35-YRe" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-1778.4000000000001" y="886.50674662668678"/>
+        </scene>
+        <!--Item-->
+        <scene sceneID="exc-Jk-gt4">
+            <objects>
+                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="3T4-It-1KN" sceneMemberID="viewController">
+                    <tabBarItem key="tabBarItem" title="Item" id="a8s-Ei-q5G"/>
+                    <toolbarItems/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="4ER-dU-ve7">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <nil name="viewControllers"/>
+                    <connections>
+                        <segue destination="BYZ-38-t0r" kind="relationship" relationship="rootViewController" id="mte-yo-yj9"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Auh-JM-SXT" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-1812" y="1667"/>
         </scene>
     </scenes>
     <inferredMetricsTieBreakers>
-        <segue reference="sWE-Xn-w5o"/>
+        <segue reference="wbX-Rh-Eea"/>
     </inferredMetricsTieBreakers>
 </document>

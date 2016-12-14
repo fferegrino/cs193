@@ -25,13 +25,22 @@ namespace FaceIt
 
 		public override void PrepareForSegue(UIStoryboardSegue segue, Foundation.NSObject sender)
 		{
-			var facevc = segue.DestinationViewController as FaceViewController;
+			var destinationvc = segue.DestinationViewController;
+			var navcon = destinationvc as UINavigationController;
+			if (navcon != null)
+			{
+				destinationvc = navcon.VisibleViewController ?? destinationvc;
+			}
+			var facevc = destinationvc as FaceViewController;
 			if (facevc != null && !String.IsNullOrEmpty(segue.Identifier))
 			{
 				FacialExpression expression;
 				if (emotionalFaces.TryGetValue(segue.Identifier, out expression))
 				{
 					facevc.Expression = expression;
+					var sendingButton = sender as UIButton;
+					if (sendingButton != null)
+						facevc.NavigationItem.Title = sendingButton.CurrentTitle;
 				}
 			}
 		}
