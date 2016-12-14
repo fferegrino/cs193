@@ -6,7 +6,7 @@ using Foundation;
 
 namespace Calculator
 {
-    public class CalculatorBrain
+    public partial class CalculatorBrain
     {
         double _accumulator;
         const double IntegerPositions = 10;
@@ -31,7 +31,7 @@ namespace Calculator
 			}
 
 			lastVariable = variableName;
-			_internalProgram.Add(variableName);
+			_internalProgram.Enqueue(variableName);
 				
 		}
 
@@ -45,7 +45,7 @@ namespace Calculator
 				_description = $"{_accumulator}";
 			}
 			lastVariable = null;
-			_internalProgram.Add(operand);
+			_internalProgram.Enqueue(operand);
         }
 
         enum Operation
@@ -54,7 +54,6 @@ namespace Calculator
             UnaryOperation,
             BinaryOperation,
             Equals,
-            //Dot,
             Clear
         }
 
@@ -101,35 +100,10 @@ namespace Calculator
             { "=", Operation.Equals }
         };
 
-        Dictionary<string, double> constants = new Dictionary<string, double>
-        {
-            { "π", Math.PI },
-            { "e", Math.E }
-        };
-
-        Dictionary<string, Func<double, double>> unaries = new Dictionary<string, Func<double, double>>
-        {
-            { "√", Math.Sqrt },
-            { "±", (d ) => -1 * d },
-            { "cos", Math.Cos },
-            { "sin", Math.Sin},
-            { "tan", Math.Tan },
-			{ "^2", (d) => d * d },
-			{ "^3", (d) => d * d }
-        };
-
-        Dictionary<string, Func<double, double, double>> binaries = new Dictionary<string, Func<double, double, double>>
-        {
-            { "×", (a,b) => a * b },
-            { "÷", (a,b) => a / b },
-            { "−", (a,b) => a - b },
-            { "+", (a,b) => a + b },
-        };
-
         internal void PerformOperation(string symbol)
         {
             Operation op;
-			_internalProgram.Add(symbol);
+			_internalProgram.Enqueue(symbol);
             if (operations.TryGetValue(symbol, out op))
             {
                 AddOperationToDescription(symbol, op);
@@ -161,7 +135,7 @@ namespace Calculator
 
         void Clear()
 		{
-			VariableValues.Remove("M");
+			//VariableValues.Remove("M");
 			_internalProgram.Clear();
             _description = null;
             _accumulator = 0;
@@ -220,12 +194,16 @@ namespace Calculator
 
         }
 
+		public void ReRunProgram()
+		{
+			
+		}
 
-		private List<Object> _internalProgram  = new List<Object>();
-		public Object Program { get { return new List<object>(_internalProgram); } set 
+		private Queue<Object> _internalProgram  = new Queue<Object>();
+		public Object Program { get { return new Queue<object>(_internalProgram); } set 
 			{
 				Clear();
-				var program = value as List<Object>;
+				var program = value as Queue<Object>;
 				if (program != null)
 				{
 					foreach (var item in program)

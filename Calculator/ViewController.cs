@@ -11,12 +11,33 @@ namespace Calculator
 			// Note: this .ctor should not contain any initialization logic.
 		}
 
+		public override void ViewDidLoad()
+		{
+			base.ViewDidLoad();
+			display.AccessibilityIdentifier = "display";
+		}
 
 
 		bool userIsInTheMiddleOfTyping;
 		static readonly string Dot = NumberFormatInfo.CurrentInfo.NumberDecimalSeparator;
 
 
+		partial void Undo(){
+
+			if (userIsInTheMiddleOfTyping)
+			{
+				var l = display.Text.Length;
+				if (l > 0)
+				{
+					display.Text = display.Text.Substring(0, l - 1);
+				}
+			}
+			else 
+			{
+				brain.UndoLastOperation();
+				brain.Program = brain.Program;
+			}
+		}
 
 		partial void RestoreMemory(UIKit.UIButton sender)
 		{
@@ -29,7 +50,7 @@ namespace Calculator
 			var program = brain.Program;
 			brain.VariableValues["M"] = DisplayValue;
 			brain.Program = program;
-			DisplayValue = brain.Result;
+			SetResult();
 		}
 
 		partial void TouchDigit(UIButton sender)
