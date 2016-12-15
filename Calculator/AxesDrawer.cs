@@ -48,7 +48,6 @@ namespace Calculator
 				color.SetFill();
 				color.SetStroke();
 
-
 				var path = new UIBezierPath();
 
 				path.MoveTo(new CGPoint(x: bounds.GetMinX(), y: Align(origin.Y)));
@@ -61,6 +60,9 @@ namespace Calculator
 				context.RestoreState();
 			}
 		}
+
+		public double MinSpanX { get; private set;}
+		public double MaxSpanX { get; private set; }
 
 		private void DrawHashmarksInRect(CGRect bounds, CGPoint origin, double pointsPerUnit)
 		{
@@ -106,16 +108,26 @@ namespace Calculator
 				formatter.MaximumFractionDigits = (nint)(-1 * Log10(unitsPerHashmark));
 				formatter.MinimumIntegerDigits = 1;
 
+				double lessMin = 0;
+				double lessMax = Double.MinValue;
+
+				double min = Double.MaxValue;
+				double max = 0;
+
+				bool visibleLeft = true;
+				bool visibleRight = true;
+
 				// radiate the bbox out until the hashmarks are further out than the bounds
 				while (!bbox.Contains(bounds))
 
 				{
-					var label = formatter.StringFromNumber((origin.X - bbox.GetMinX()) / pointsPerUnit);
+					var xAxis = (origin.X - bbox.GetMinX()) / pointsPerUnit;
+					var label = formatter.StringFromNumber(xAxis);
 
 					var leftHashmarkPoint = AlignedPoint(x: bbox.GetMinX(), y: origin.Y, insideBounds: bounds);
 					if (leftHashmarkPoint != null)
 					{
-						DrawHashmarkAtLocation(leftHashmarkPoint.Value, AnchoredText.Top($"{label}"));
+						DrawHashmarkAtLocation(leftHashmarkPoint.Value, AnchoredText.Top($"-{label}"));
 					}
 
 					var rightHashmarkPoint = AlignedPoint(x: bbox.GetMaxX(), y: origin.Y, insideBounds: bounds);
@@ -123,6 +135,21 @@ namespace Calculator
 					{
 						DrawHashmarkAtLocation(rightHashmarkPoint.Value, AnchoredText.Top(label));
 					}
+
+					visibleLeft = AlignedPoint(x: bbox.GetMinX(), y: bounds.GetMidY(), insideBounds: bounds) != null;
+					visibleRight = AlignedPoint(x: bbox.GetMaxX(), y: bounds.GetMidY(), insideBounds: bounds) != null;
+
+					if (visibleLeft)
+					{
+						lessMin = Min(lessMin, -1*xAxis);
+						lessMax = Max(lessMax, -1*xAxis);
+					}
+					if (visibleRight)
+					{
+						min = Min(min, xAxis);
+						max = Max(max, xAxis);
+					}
+
 
 					var topHashmarkPoint = AlignedPoint(x: origin.X, y: bbox.GetMinY(), insideBounds: bounds);
 					if (topHashmarkPoint != null)
@@ -133,20 +160,34 @@ namespace Calculator
 					var bottomHashmarkPoint = AlignedPoint(x: origin.X, y: bbox.GetMaxY(), insideBounds: bounds);
 					if (bottomHashmarkPoint != null)
 					{
-						DrawHashmarkAtLocation(bottomHashmarkPoint.Value, AnchoredText.Left($"{label}"));
+						DrawHashmarkAtLocation(bottomHashmarkPoint.Value, AnchoredText.Left($"-{label}"));
 
 					}
 
-					//var rectr = UIBezierPath.FromRect(bbox);
-					//rectr.Stroke();
 					bbox = bbox.Inset(dx: (System.nfloat)(-1 * pointsPerHashmark), dy: (System.nfloat)(-1 * pointsPerHashmark));
 				}
+
+				 MinSpanX = lessMin;
+				 MaxSpanX = max;
+				if (lessMin == 0) // Left is not visible:
+				{
+					MinSpanX = min;
+					MaxSpanX = max;
+				}
+				if (max == 0) // Right is not visible:
+				{
+					MinSpanX = lessMin;
+					MaxSpanX = lessMax;
+				}
+
+				MinSpanX -= pointsPerHashmark * 2;
+				MaxSpanX += pointsPerHashmark * 2;
+				//System.Diagnostics.Debug.WriteLine($"From {MinSpanX} to {MaxSpanX}");
 			}
 		}
 
 		private void DrawHashmarkAtLocation(CGPoint location, AnchoredText text)
 		{
-
 			var dx = 0.0;
 			var dy = 0.0;
 			switch (text.Anchor)
