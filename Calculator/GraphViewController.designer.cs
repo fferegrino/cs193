@@ -20,5 +20,7 @@ namespace Calculator
 				GraphingView = null;
 			}
 		}
+
+
 	}
 }

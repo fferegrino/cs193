@@ -164,6 +164,7 @@ namespace Calculator
 
 				if (graphViewController != null)
 				{
+					graphViewController.Program = brain.Program;
 					graphViewController.NavigationItem.Title = brain.Description;
 				}
 			}

@@ -79,7 +79,8 @@ namespace Calculator
 			set { _origin = value; SetNeedsDisplay(); }
 		}
 
-		Func<double, double> DrawingFunc;
+		Func<double, double> _func;
+		public Func<double, double> DrawingFunc { get { return _func; } set { _func = value; SetNeedsDisplay(); } }
 
 		AxesDrawer drawer = new AxesDrawer(UIColor.Black);
 		public override void Draw(CoreGraphics.CGRect rect)
@@ -96,7 +97,8 @@ namespace Calculator
 			double x = starting;
 			double step = 0.3;
 
-			DrawingFunc = (t) => Sin(t);
+			if (_func == null)
+				return;
 
 			// Move line to start:
 			line.MoveTo(MoveToOrigin(x, DrawingFunc(x)));
@@ -108,7 +110,6 @@ namespace Calculator
 				x += step;
 			}
 			line.Stroke();
-			//line.Fill();
 
 		}
 

@@ -35,12 +35,23 @@ namespace Calculator
 		{
 		}
 
+		object _program;
+		public object Program { get; set; }
+
+		CalculatorBrain brain = new CalculatorBrain();
+
 		public override void ViewDidLoad()
 		{
 			base.ViewDidLoad();
 
+			GraphingView.DrawingFunc = Function;
+		}
 
-
+		double Function(double x)
+		{
+			brain.VariableValues["M"] = x;
+			brain.Program = Program;
+			return brain.Result;
 		}
 	}
 }
