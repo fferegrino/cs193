@@ -9,8 +9,38 @@ namespace Calculator
 {
 	public partial class GraphViewController : UIViewController
 	{
+
+		GraphingView _graphingView;
+		[Outlet]
+		GraphingView GraphingView { get { return _graphingView; } set { _graphingView = value; WireGraphingView(); } }
+
+		void WireGraphingView()
+		{
+			var pinch = new UIPinchGestureRecognizer();
+			pinch.AddTarget(() => GraphingView.ChangeScale(pinch));
+			GraphingView.AddGestureRecognizer(pinch);
+
+			var doubleTap = new UITapGestureRecognizer();
+			doubleTap.NumberOfTapsRequired = 2;
+			doubleTap.AddTarget(() => GraphingView.ChangeOrigin(doubleTap));
+			GraphingView.AddGestureRecognizer(doubleTap);
+
+
+            var pan = new UIPanGestureRecognizer();
+			pan.AddTarget(() => GraphingView.PanGraph(pan));
+			GraphingView.AddGestureRecognizer(pan);
+		}
+
 		public GraphViewController (IntPtr handle) : base (handle)
 		{
+		}
+
+		public override void ViewDidLoad()
+		{
+			base.ViewDidLoad();
+
+
+
 		}
 	}
 }

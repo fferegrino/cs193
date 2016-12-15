@@ -15,6 +15,10 @@ namespace Calculator
 		
 		void ReleaseDesignerOutlets ()
 		{
+			if (GraphingView != null) {
+				GraphingView.Dispose ();
+				GraphingView = null;
+			}
 		}
 	}
 }

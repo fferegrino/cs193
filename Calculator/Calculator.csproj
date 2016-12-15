@@ -118,6 +118,7 @@
     <Compile Include="GraphViewController.designer.cs">
       <DependentUpon>GraphViewController.cs</DependentUpon>
     </Compile>
+    <Compile Include="GraphingView.cs" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Main.cs" />

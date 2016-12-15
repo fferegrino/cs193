@@ -15,7 +15,7 @@ namespace Calculator
 
 		UIColor color = UIColor.Blue;
 		double minimumPointsPerHashmark = 40;
-		double contentScaleFactor = 1; // set this from UIView's contentScaleFactor to position axes with maximum accuracy
+		double contentScaleFactor = 0.1; // set this from UIView's contentScaleFactor to position axes with maximum accuracy
 
 		public AxesDrawer(UIColor color, double contentScaleFactor)
 		{
@@ -54,7 +54,7 @@ namespace Calculator
 				path.MoveTo(new CGPoint(x: bounds.GetMinX(), y: Align(origin.Y)));
 				path.AddLineTo(new CGPoint(x: bounds.GetMaxY(), y: Align(origin.Y)));
 				path.MoveTo(new CGPoint(x: Align(origin.X), y: bounds.GetMinY()));
-				path.AddLineTo(new CGPoint(x: Align(origin.X), y: bounds.GetMaxX()));
+				path.AddLineTo(new CGPoint(x: Align(origin.X), y: bounds.GetMaxY()));
 				path.Stroke();
 				DrawHashmarksInRect(bounds, origin: origin, pointsPerUnit: Abs(pointsPerUnit));
 
@@ -85,7 +85,7 @@ namespace Calculator
 				// figure out which is the closest set of hashmarks (radiating out from the origin) that are in bounds
 				double startingHashmarkRadius = 1;
 
-				if (bounds.Contains(origin))
+				if (!bounds.Contains(origin))
 				{
 					var leftx = Max(origin.X - bounds.GetMaxX(), 0);
 					var rightx = Max(bounds.GetMinX() - origin.X, 0);
@@ -99,7 +99,7 @@ namespace Calculator
 				// now create a bounding box inside whose edges those four hashmarks lie
 				var bboxSize = pointsPerHashmark * startingHashmarkRadius * 2;
 
-				var bbox = new CGRect(origin, size: new CGSize(width: bboxSize, height: bboxSize));
+				var bbox = CenteredRect(origin, size: new CGSize(width: bboxSize, height: bboxSize));
 
 				// formatter for the hashmark labels
 				var formatter = new NSNumberFormatter();
@@ -111,37 +111,42 @@ namespace Calculator
 
 				{
 					var label = formatter.StringFromNumber((origin.X - bbox.GetMinX()) / pointsPerUnit);
+
 					var leftHashmarkPoint = AlignedPoint(x: bbox.GetMinX(), y: origin.Y, insideBounds: bounds);
 					if (leftHashmarkPoint != null)
-
 					{
-						DrawHashmarkAtLocation(leftHashmarkPoint.Value, AnchoredText.Top("-\\(label)"));
-
+						DrawHashmarkAtLocation(leftHashmarkPoint.Value, AnchoredText.Top($"{label}"));
 					}
+
 					var rightHashmarkPoint = AlignedPoint(x: bbox.GetMaxX(), y: origin.Y, insideBounds: bounds);
 					if (rightHashmarkPoint != null)
 					{
 						DrawHashmarkAtLocation(rightHashmarkPoint.Value, AnchoredText.Top(label));
 					}
+
 					var topHashmarkPoint = AlignedPoint(x: origin.X, y: bbox.GetMinY(), insideBounds: bounds);
 					if (topHashmarkPoint != null)
 					{
 						DrawHashmarkAtLocation(topHashmarkPoint.Value, AnchoredText.Left(label));
 					}
+
 					var bottomHashmarkPoint = AlignedPoint(x: origin.X, y: bbox.GetMaxY(), insideBounds: bounds);
 					if (bottomHashmarkPoint != null)
 					{
-						DrawHashmarkAtLocation(bottomHashmarkPoint.Value, AnchoredText.Left("-\\(label)"));
+						DrawHashmarkAtLocation(bottomHashmarkPoint.Value, AnchoredText.Left($"{label}"));
 
 					}
-					bbox.Inset(dx: (System.nfloat)(-1 * pointsPerHashmark), dy: (System.nfloat)(-1 * pointsPerHashmark));
 
+					//var rectr = UIBezierPath.FromRect(bbox);
+					//rectr.Stroke();
+					bbox = bbox.Inset(dx: (System.nfloat)(-1 * pointsPerHashmark), dy: (System.nfloat)(-1 * pointsPerHashmark));
 				}
 			}
 		}
 
 		private void DrawHashmarkAtLocation(CGPoint location, AnchoredText text)
 		{
+
 			var dx = 0.0;
 			var dy = 0.0;
 			switch (text.Anchor)
@@ -255,21 +260,26 @@ namespace Calculator
 		// if contentScaleFactor is left to its default (1), then things will be on the nearest "point" boundary instead
 		// the lines will still be sharp in that case, but might be a pixel (or more theoretically) off of where they should be
 
-		CGPoint? AlignedPoint(nfloat x, nfloat y, CGRect insideBounds)
+		CGPoint? AlignedPoint(nfloat x, nfloat y, CGRect? insideBounds)
 		{
 			var point = new CGPoint(x: Align(x), y: Align(y));
 			var permissibleBounds = insideBounds;
-			if (permissibleBounds.Contains(point))
-				return null;
-			//if let permissibleBounds = insideBounds where !CGRectContainsPoint(permissibleBounds, point) {
-			//		return nil
-			//}
+			if (permissibleBounds != null)
+			{
+				if (!permissibleBounds.Value.Contains(point))
+					return null;
+			}
 			return point;
 		}
 
 		double Align(double x)
 		{
 			return Round(x * contentScaleFactor) / contentScaleFactor;
+		}
+
+		CGRect CenteredRect(CGPoint center, CGSize size)
+		{
+			return new CGRect(center.X - size.Width / 2, y: center.Y - size.Height / 2, width: size.Width, height: size.Height);
 		}
 	}
 }
