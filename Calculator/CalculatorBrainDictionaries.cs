@@ -20,7 +20,7 @@ namespace Calculator
 			{ "sin", Math.Sin},
 			{ "tan", Math.Tan },
 			{ "^2", (d) => d * d },
-			{ "^3", (d) => d * d }
+			{ "^3", (d) => d * d * d }
 		};
 
 		Dictionary<string, Func<double, double, double>> binaries = new Dictionary<string, Func<double, double, double>>
