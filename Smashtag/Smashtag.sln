@@ -1,0 +1,23 @@
+
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Smashtag", "Smashtag.csproj", "{010708B1-B951-45E8-AC58-AE6C695C08B4}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|iPhoneSimulator = Debug|iPhoneSimulator
+		Release|iPhone = Release|iPhone
+		Release|iPhoneSimulator = Release|iPhoneSimulator
+		Debug|iPhone = Debug|iPhone
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{010708B1-B951-45E8-AC58-AE6C695C08B4}.Debug|iPhoneSimulator.ActiveCfg = Debug|iPhoneSimulator
+		{010708B1-B951-45E8-AC58-AE6C695C08B4}.Debug|iPhoneSimulator.Build.0 = Debug|iPhoneSimulator
+		{010708B1-B951-45E8-AC58-AE6C695C08B4}.Release|iPhone.ActiveCfg = Release|iPhone
+		{010708B1-B951-45E8-AC58-AE6C695C08B4}.Release|iPhone.Build.0 = Release|iPhone
+		{010708B1-B951-45E8-AC58-AE6C695C08B4}.Release|iPhoneSimulator.ActiveCfg = Release|iPhoneSimulator
+		{010708B1-B951-45E8-AC58-AE6C695C08B4}.Release|iPhoneSimulator.Build.0 = Release|iPhoneSimulator
+		{010708B1-B951-45E8-AC58-AE6C695C08B4}.Debug|iPhone.ActiveCfg = Debug|iPhone
+		{010708B1-B951-45E8-AC58-AE6C695C08B4}.Debug|iPhone.Build.0 = Debug|iPhone
+	EndGlobalSection
+EndGlobal
