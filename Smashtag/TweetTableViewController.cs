@@ -9,7 +9,7 @@ using UIKit;
 
 namespace Smashtag
 {
-	public partial class TweetTableViewController : UITableViewController
+	public partial class TweetTableViewController : UITableViewController, IUITextFieldDelegate
 	{
 		public TweetTableViewController (IntPtr handle) : base (handle)
 		{
@@ -44,10 +44,10 @@ namespace Smashtag
 		{
 			CredentialStore = new SingleUserInMemoryCredentialStore
 			{
-				ConsumerKey = "zxEHIfRSyTuZMISSINGvAXPU",
-				ConsumerSecret = "TdXx16u7VMISSINGkPu0MZy89Y83YLd4OKwlaZgKjztumznCT",
-				AccessToken = "89851232-NLgMISSINGEacp7tEvpWg6aLPKQUOGBVTOgfD7Nr",
-				AccessTokenSecret = "ryV0dKMISSINGEuJgq4Vn2XT1swzhqixYMxZnc7KMkSV"
+				ConsumerKey = "zxEHIfRMISSINGPARTS",
+				ConsumerSecret = "TdXxMISSINGPARTSZy89Y83YLd4OKwlaZgKjztumznCT",
+				AccessToken = "8985123MISSINGPARTStEvpWg6aLPKQUOGBVTOgfD7Nr",
+				AccessTokenSecret = "rMISSINGPARTS4Vn2XT1swzhqixYMxZnc7KMkSV"
 			}
 		});
 
@@ -64,8 +64,8 @@ namespace Smashtag
 					 where search.Type == SearchType.Search &&
 						   search.Query == SearchText &&
 						   search.Count == 100
-					 select search)
-					.SingleOrDefault();
+					 select search)					
+						.SingleOrDefault();
 				InvokeOnMainThread(() =>
 				{
 					_tweets.Insert(0, srch.Statuses);
@@ -77,7 +77,21 @@ namespace Smashtag
 		public override void ViewDidLoad()
 		{
 			base.ViewDidLoad();
-			SearchText = "#stanford";
+			TableView.EstimatedRowHeight = TableView.RowHeight;
+			TableView.RowHeight = UITableView.AutomaticDimension;
+			//SearchText = "#stanford";
+
+			//
+			searchTextField.Delegate = this;
+			searchTextField.Text = SearchText;
+		}
+
+		[Export("textFieldShouldReturn:")]
+		public bool ShouldReturn(UITextField textField)
+		{
+			textField.ResignFirstResponder();
+			SearchText = textField.Text;
+			return true;
 		}
 
 		public override nint NumberOfSections(UITableView tableView)
@@ -97,11 +111,12 @@ namespace Smashtag
 
 		public override UITableViewCell GetCell(UITableView tableView, NSIndexPath indexPath)
 		{
-			var cell = TableView.DequeueReusableCell(StoryboardId.TweetCellIdentifier, indexPath);
+			var cell = TableView.DequeueReusableCell(StoryboardId.TweetCellIdentifier, indexPath) as TweetTableViewCell;
 
-			var tweet = Tweets[indexPath.Section][indexPath.Row];
-			cell.TextLabel.Text = tweet.Text;
-			cell.DetailTextLabel.Text = tweet.User.Name;
+			if (cell != null)
+			{
+				cell.Tweet =Tweets[indexPath.Section][indexPath.Row];
+			}
 
 			return cell;
 		}

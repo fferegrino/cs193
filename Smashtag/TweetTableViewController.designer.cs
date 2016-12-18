@@ -12,9 +12,15 @@ namespace Smashtag
 	[Register ("TweetTableViewController")]
 	partial class TweetTableViewController
 	{
+		[Outlet]
+		UIKit.UITextField searchTextField { get; set; }
 		
 		void ReleaseDesignerOutlets ()
 		{
+			if (searchTextField != null) {
+				searchTextField.Dispose ();
+				searchTextField = null;
+			}
 		}
 	}
 }
