@@ -44,10 +44,10 @@ namespace Smashtag
 		{
 			CredentialStore = new SingleUserInMemoryCredentialStore
 			{
-				ConsumerKey = "zxEHIfRMISSINGPARTS",
-				ConsumerSecret = "TdXxMISSINGPARTSZy89Y83YLd4OKwlaZgKjztumznCT",
-				AccessToken = "8985123MISSINGPARTStEvpWg6aLPKQUOGBVTOgfD7Nr",
-				AccessTokenSecret = "rMISSINGPARTS4Vn2XT1swzhqixYMxZnc7KMkSV"
+				ConsumerKey = "zxEHIfMISSING PARTSU",
+				ConsumerSecret = "TdXMISSING PARTSMZy89Y83YLd4OKwlaZgKjztumznCT",
+				AccessToken = "898512MISSING PARTS7tEvpWg6aLPKQUOGBVTOgfD7Nr",
+				AccessTokenSecret = "MISSING PARTSq4Vn2XT1swzhqixYMxZnc7KMkSV"
 			}
 		});
 
@@ -59,9 +59,8 @@ namespace Smashtag
 			new System.Threading.Thread(new System.Threading.ThreadStart(() =>
 			{
 
-			var srch =
-					(from search in ctx.Search
-					 where search.Type == SearchType.Search &&
+			var srch = (from search in ctx.Search
+					 	where search.Type == SearchType.Search &&
 						   search.Query == SearchText &&
 						   search.Count == 100
 					 select search)					
@@ -79,7 +78,8 @@ namespace Smashtag
 			base.ViewDidLoad();
 			TableView.EstimatedRowHeight = TableView.RowHeight;
 			TableView.RowHeight = UITableView.AutomaticDimension;
-			//SearchText = "#stanford";
+
+			SearchText = "#MasterChef";
 
 			//
 			searchTextField.Delegate = this;
@@ -104,9 +104,12 @@ namespace Smashtag
 			return Tweets[(int)section].Count;
 		}
 
+
+
 		struct StoryboardId
 		{
 			public const string TweetCellIdentifier = "Tweet";
+			public const string ViewTweetDetailSegue = "View Tweet Detail";
 		}
 
 		public override UITableViewCell GetCell(UITableView tableView, NSIndexPath indexPath)
@@ -115,10 +118,43 @@ namespace Smashtag
 
 			if (cell != null)
 			{
-				cell.Tweet =Tweets[indexPath.Section][indexPath.Row];
+				cell.Tweet = Tweets[indexPath.Section][indexPath.Row];
 			}
 
 			return cell;
 		}
+
+		#region Segues
+
+		Status _selectedTweet;
+
+		public override void RowSelected(UITableView tableView, NSIndexPath indexPath)
+		{
+			_selectedTweet = Tweets[indexPath.Section][indexPath.Row];
+			this.PerformSegue(StoryboardId.ViewTweetDetailSegue, tableView);
+		}
+
+		public override bool ShouldPerformSegue(string segueIdentifier, NSObject sender)
+		{
+			if (StoryboardId.ViewTweetDetailSegue.Equals(segueIdentifier))
+			{
+				return _selectedTweet != null;
+			}
+			return base.ShouldPerformSegue(segueIdentifier, sender);
+		}
+
+		public override void PrepareForSegue(UIStoryboardSegue segue, NSObject sender)
+		{
+			if (StoryboardId.ViewTweetDetailSegue.Equals(segue.Identifier))
+			{
+				var mdtvc = segue.DestinationViewController.ContentViewController() as MetaDataTableViewController;
+				mdtvc.Tweet = _selectedTweet;
+			}
+			else
+			{
+				base.PrepareForSegue(segue, sender);
+			}
+		}
+		#endregion
 	}
 }
