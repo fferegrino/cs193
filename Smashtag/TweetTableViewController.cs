@@ -54,13 +54,19 @@ namespace Smashtag
 		void SearchForTweets()
 		{
 
+
+			var plist = NSUserDefaults.StandardUserDefaults;
+			recentSearches.AddSearchTerm(SearchText);
+			var saved = recentSearches.Get();
+			plist.SetString(saved, (Foundation.NSString)OtherId.RecentSearches);
+			plist.Synchronize();
+
 			TwitterContext ctx = new TwitterContext(Auth);
 
 			new System.Threading.Thread(new System.Threading.ThreadStart(() =>
 			{
 				var srch = (from search in ctx.Search
 							where search.Type == SearchType.Search &&
-
 							   search.Query == SearchText + "-filter:retweets" &&
 							   search.Count == 100
 							select search)
@@ -72,16 +78,20 @@ namespace Smashtag
 				});
 			})).Start();
 		}
-
+		RecentSearches recentSearches;
 		public override void ViewDidLoad()
 		{
 			base.ViewDidLoad();
 			TableView.EstimatedRowHeight = TableView.RowHeight;
 			TableView.RowHeight = UITableView.AutomaticDimension;
 
-			//SearchText = "from:earth_pics";
+			// Get Shared User Defaults
+			var plist = NSUserDefaults.StandardUserDefaults;
 
-			//
+			var searches = plist.StringForKey(OtherId.RecentSearches);
+			recentSearches = new RecentSearches();
+			recentSearches.Load(searches);
+
 			searchTextField.Delegate = this;
 			searchTextField.Text = SearchText;
 		}
@@ -98,6 +108,11 @@ namespace Smashtag
 		{
 			public const string TweetCellIdentifier = "Tweet";
 			public const string ViewTweetDetailSegue = "View Tweet Detail";
+		}
+
+		struct OtherId
+		{
+			public const string RecentSearches = "RecentSearches";
 		}
 
 		public override nint NumberOfSections(UITableView tableView)
