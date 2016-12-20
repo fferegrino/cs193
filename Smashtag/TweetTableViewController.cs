@@ -44,10 +44,10 @@ namespace Smashtag
 		{
 			CredentialStore = new SingleUserInMemoryCredentialStore
 			{
-				ConsumerKey = "zxEHIfMISSING PARTSU",
-				ConsumerSecret = "TdXMISSING PARTSMZy89Y83YLd4OKwlaZgKjztumznCT",
-				AccessToken = "898512MISSING PARTS7tEvpWg6aLPKQUOGBVTOgfD7Nr",
-				AccessTokenSecret = "MISSING PARTSq4Vn2XT1swzhqixYMxZnc7KMkSV"
+				ConsumerKey = "zxEHIfGONE WITH THE WIND",
+				ConsumerSecret = "TdXGONE WITH THE WINDZy89Y83YLd4OKwlaZgKjztumznCT",
+				AccessToken = "898512GONE WITH THE WINDtEvpWg6aLPKQUOGBVTOgfD7Nr",
+				AccessTokenSecret = "GONE WITH THE WIND4Vn2XT1swzhqixYMxZnc7KMkSV"
 			}
 		});
 
@@ -58,16 +58,23 @@ namespace Smashtag
 
 			new System.Threading.Thread(new System.Threading.ThreadStart(() =>
 			{
+				var results = from sim in ctx.Status
+							  where sim.ScreenName == "MarouanBaamel" &&
+				                             sim.Type == StatusType.User
+		                            //&& sim.Count == 30
+							  select sim;
 
-			var srch = (from search in ctx.Search
-					 	where search.Type == SearchType.Search &&
-						   search.Query == SearchText &&
-						   search.Count == 100
-					 select search)					
-						.SingleOrDefault();
+				var srch = results.ToList();//.SingleOrDefault();
+					//(from search in ctx.Search
+				 //       where search.Type == SearchType.Search &&
+
+					//	   search.Query == SearchText+ "-filter:retweets" &&
+					//	   search.Count == 100
+					// select search)					
+					//	.SingleOrDefault();
 				InvokeOnMainThread(() =>
 				{
-					_tweets.Insert(0, srch.Statuses);
+					_tweets.Insert(0, srch);
 					TableView.ReloadData();
 				});
 			})).Start();
@@ -79,7 +86,7 @@ namespace Smashtag
 			TableView.EstimatedRowHeight = TableView.RowHeight;
 			TableView.RowHeight = UITableView.AutomaticDimension;
 
-			SearchText = "#MasterChef";
+			SearchText = "from:earth_pics";
 
 			//
 			searchTextField.Delegate = this;
@@ -94,6 +101,12 @@ namespace Smashtag
 			return true;
 		}
 
+		struct StoryboardId
+		{
+			public const string TweetCellIdentifier = "Tweet";
+			public const string ViewTweetDetailSegue = "View Tweet Detail";
+		}
+
 		public override nint NumberOfSections(UITableView tableView)
 		{
 			return Tweets.Count;
@@ -104,13 +117,6 @@ namespace Smashtag
 			return Tweets[(int)section].Count;
 		}
 
-
-
-		struct StoryboardId
-		{
-			public const string TweetCellIdentifier = "Tweet";
-			public const string ViewTweetDetailSegue = "View Tweet Detail";
-		}
 
 		public override UITableViewCell GetCell(UITableView tableView, NSIndexPath indexPath)
 		{

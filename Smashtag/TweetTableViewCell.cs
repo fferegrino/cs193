@@ -37,8 +37,7 @@ namespace Smashtag
 		private NSAttributedString GetAttributedText(Status tweet)
 		{
 			var text = tweet.Text;
-			var myAttribute = UIFont.FromName("Chalkduster", (System.nfloat)18.0);
-			var myString = new NSMutableAttributedString(text, myAttribute);
+			var myString = new NSMutableAttributedString(text);
 
 			var hashtagLocations = tweet.Hashtags();
 			for (int i = 0; i < hashtagLocations.Count; i+= 2)

@@ -137,7 +137,7 @@
     <Compile Include="TweetTableViewController.designer.cs">
       <DependentUpon>TweetTableViewController.cs</DependentUpon>
     </Compile>
-    <Compile Include="Tweet.cs" />
+    <Compile Include="MetaDataElement.cs" />
     <Compile Include="TweetTableViewCell.cs" />
     <Compile Include="TweetTableViewCell.designer.cs">
       <DependentUpon>TweetTableViewCell.cs</DependentUpon>
@@ -147,6 +147,10 @@
       <DependentUpon>MetaDataTableViewController.cs</DependentUpon>
     </Compile>
     <Compile Include="Util.cs" />
+    <Compile Include="TweetImageViewCell.cs" />
+    <Compile Include="TweetImageViewCell.designer.cs">
+      <DependentUpon>TweetImageViewCell.cs</DependentUpon>
+    </Compile>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />
   <Import Project="packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets" Condition="Exists('packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets')" />
