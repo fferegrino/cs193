@@ -70,7 +70,7 @@
     <DefineConstants>DEBUG;ENABLE_TEST_CLOUD;</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <CodesignKey>iPhone Developer</CodesignKey>
+    <CodesignKey>iPhone Developer: Antonio Feregrino (ZX3X37UM6C)</CodesignKey>
     <DeviceSpecificBuild>true</DeviceSpecificBuild>
     <MtouchDebug>true</MtouchDebug>
     <MtouchFastDev>true</MtouchFastDev>
@@ -83,6 +83,7 @@
     <MtouchHttpClientHandler>HttpClientHandler</MtouchHttpClientHandler>
     <MtouchTlsProvider>Default</MtouchTlsProvider>
     <PlatformTarget>x86</PlatformTarget>
+    <CodesignProvision>9a090ae2-893a-4400-8086-bd9766ccceb3</CodesignProvision>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -150,6 +151,10 @@
     <Compile Include="TweetImageViewCell.cs" />
     <Compile Include="TweetImageViewCell.designer.cs">
       <DependentUpon>TweetImageViewCell.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ZoomedImageViewController.cs" />
+    <Compile Include="ZoomedImageViewController.designer.cs">
+      <DependentUpon>ZoomedImageViewController.cs</DependentUpon>
     </Compile>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />

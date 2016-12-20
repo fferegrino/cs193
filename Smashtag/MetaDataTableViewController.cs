@@ -11,12 +11,24 @@ namespace Smashtag
 {
 	public partial class MetaDataTableViewController : UITableViewController
 	{
-		Dictionary<string, List<MetaDataElement>> _entities = new Dictionary<string, List<MetaDataElement>>();
+		List<TweetImage> _images = new List<TweetImage>();
+		List<string> _mentions = new List<string>();
+		List<string> _hashtags = new List<string>();
+		List<TweetUrl> _urls = new List<TweetUrl>();
+		Dictionary<int, string> _sections = new Dictionary<int, string>
+		{
+			{0, "Images"},
+			{1, "Mentions"},
+			{2, "Hashtags"},
+			{3, "Links"},
+		};
 
 		struct StoryboardId
 		{
 			public const string BasicCellIdentifier = "Basic Info Cell";
 			public const string ImageCellIdentifier = "Tweet Image Cell";
+			public const string SearchAgainSegue = "Search Again";
+			public const string ViewZoomedImageSegue = "View Zoomed Image";
 		}
 		public MetaDataTableViewController (IntPtr handle) : base (handle)
 		{
@@ -40,103 +52,206 @@ namespace Smashtag
 		void SetupUI()
 		{
 			Title = Tweet.User.ScreenNameResponse;
-			_entities.Clear();
+			_hashtags.Clear();
+			_images.Clear();
+			_mentions.Clear();
+			_urls.Clear();
 
-			var images = Tweet.Entities.MediaEntities.SelectMany(media => media.Sizes.Select(size => new MetaDataElement { Value = media.MediaUrl, AspectRatio= (decimal)size.Height/ size.Width, Kind = MetaDataKind.Image }));
+			var images = Tweet.ExtendedEntities
+							  .MediaEntities
+							  .Select(media =>
+									  media
+									  .Sizes
+									  .Select(size =>
+											  new TweetImage
+											  {
+												  Url = media.MediaUrl,
+												  Height = size.Height,
+												  Width = size.Width
+											  }).First());
 
-			_entities.Add(_sections[0],images.ToList());
+			_images.AddRange(images);
 
-			_entities.Add(_sections[1],
-			              Tweet.Entities.UserMentionEntities.Select(x => new MetaDataElement { 
-								Value = x.Name,
-								Kind = MetaDataKind.Mention
-						  }).ToList());
-			_entities.Add(_sections[2],
-						  Tweet.Entities.HashTagEntities.Select(x => new MetaDataElement
-						  {
-							  Value = x.Tag,
-							  Kind = MetaDataKind.Mention
-						  }).ToList());
-			_entities.Add(_sections[3],
-			              Tweet.Entities.UrlEntities.Select(x => new MetaDataElement
-						  {
-							  Value = x.Url,
-							  Kind = MetaDataKind.Mention
-						  }).ToList());
+			_mentions.AddRange(
+				Tweet.Entities.UserMentionEntities
+				.Select(m => '@' + m.ScreenName));
+
+			_hashtags.AddRange(
+				Tweet.Entities.HashTagEntities
+				.Select(m => '#' + m.Tag));
+
+			_urls.AddRange(Tweet.Entities.UrlEntities.Select(x => new TweetUrl
+			{
+				DisplayUrl = x.DisplayUrl,
+				RealUrl = x.ExpandedUrl
+			}));
+
 			TableView.ReloadData();
 		}
 
 
 		#region Table
 
-		Dictionary<int, string> _sections = new Dictionary<int, string>
-		{ 
-			{0, "Images"},
-			{1, "Mentions"},
-			{2, "Hashtags"},
-			{3, "Links"},
-		};
-
 		public override string TitleForHeader(UITableView tableView, nint section)
 		{
-			return _entities[ _sections[(int)section]].Count > 0 ? _sections[(int)section] : String.Empty;
+			var header = "";
+			switch (section)
+			{
+				case 0: // Images
+					if (_images.Count > 0)
+						header = _sections[0];
+					break;
+				case 1: // Mentions
+					if (_mentions.Count > 0)
+						header = _sections[1];
+					break;
+				case 2: // Hashtags
+					if (_hashtags.Count > 0)
+						header = _sections[2];
+					break;
+				case 3: // Urls
+					if (_urls.Count > 0)
+						header = _sections[3];
+					break;
+				default:
+					break;
+			}
+			return header;
 		}
 
 		public override nint NumberOfSections(UITableView tableView)
 		{
-			return _entities.Count;
+			return _sections.Count;
 		}
 
 		public override nint RowsInSection(UITableView tableView, nint section)
 		{
-			
-			return _entities[_sections[(int)section]].Count;
+			switch (section)
+			{
+				case 0: // Images
+					return _images.Count;
+				case 1: // Mentions
+					return _mentions.Count;
+				case 2: // Hashtags
+					return _hashtags.Count;
+				case 3: // Urls
+					return _urls.Count;
+				default:
+					break;
+			}
+			return 0;
 		}
 
 		public override nfloat GetHeightForRow(UITableView tableView, NSIndexPath indexPath)
 		{
-
-			if (indexPath.Section == 0)
+			if (indexPath.Section == 0) // Images
 			{
 				var width = UIScreen.MainScreen.Bounds.Width;
-				//System.Diagnostics.Debug.WriteLine($"Width: {width}\tAspect: {_entities[_sections[0]][indexPath.Row].AspectRatio}");
-				return ((nfloat)_entities[_sections[0]][indexPath.Row].AspectRatio) * width;
+				var image = _images[indexPath.Row];
+				return ((nfloat)((decimal)image.Height / image.Width)) * width;
 			}
 			return TableView.RowHeight;
 		}
 
-		public override nfloat EstimatedHeight(UITableView tableView, NSIndexPath indexPath)
-		{
-			if (indexPath.Section == 0)
-			{
-				var width = UIScreen.MainScreen.Bounds.Width;
-				System.Diagnostics.Debug.WriteLine($"Width: {width}\tAspect: {_entities[_sections[0]][indexPath.Row].AspectRatio}");
-				return new nfloat(30);// ((nfloat)_entities[_sections[0]][indexPath.Row].AspectRatio) * width;
-			}
-			return TableView.RowHeight;
-			//return base.EstimatedHeight(tableView, indexPath);
-		}
 
 		public override UITableViewCell GetCell(UITableView tableView, NSIndexPath indexPath)
 		{
-			var value = _entities[_sections[indexPath.Section]][indexPath.Row];
-			System.Diagnostics.Debug.WriteLineIf(value.Kind == MetaDataKind.Image, $"{value.Value} {value.AspectRatio}");
-			if (value.Kind != MetaDataKind.Image)
+			int section = indexPath.Section;
+			int row = indexPath.Row;
+			UITableViewCell cell;
+
+			if (section == 0)
 			{
-				var cell = TableView.DequeueReusableCell(StoryboardId.BasicCellIdentifier, indexPath);
-
-				cell.TextLabel.Text = value.Value;
-
-				return cell;
-			}
-			else {
+				var image = _images[row];
 				var imageCell = TableView.DequeueReusableCell(StoryboardId.ImageCellIdentifier, indexPath) as TweetImageViewCell;
-
-				imageCell.SetImage(value.Value);
+				imageCell.SetImage(image.Url);
 				return imageCell;
 			}
-			//return null;
+			else 
+			{
+				string value = "";
+				cell = TableView.DequeueReusableCell(StoryboardId.BasicCellIdentifier, indexPath);
+				if (section == 1)
+					value = _mentions[row];
+				else if (section == 2)
+					value = _hashtags[row];
+				else if (section == 3)
+					value = _urls[row].DisplayUrl;
+				
+				cell.TextLabel.Text = value;
+				return cell;
+			}
 		}
 		#endregion
+
+		#region Segues
+
+
+		string _selectedValue;
+
+		public override void RowSelected(UITableView tableView, NSIndexPath indexPath)
+		{
+			int row = indexPath.Row;
+			int section = indexPath.Section;
+			if (indexPath.Section == 0) // Image
+			{
+				_selectedValue = _images[row].Url;
+				this.PerformSegue(StoryboardId.ViewZoomedImageSegue, tableView);
+			}
+			else if (indexPath.Section == 3) // links
+			{
+				UIApplication.SharedApplication.OpenUrl(new Uri(_urls[row].RealUrl));
+			}
+			else {
+
+				if (section == 1)
+					_selectedValue = _mentions[row];
+				else if (section == 2)
+					_selectedValue = _hashtags[row];
+				this.PerformSegue(StoryboardId.SearchAgainSegue, tableView);
+			}
+		}
+
+		public override bool ShouldPerformSegue(string segueIdentifier, NSObject sender)
+		{
+			if (StoryboardId.SearchAgainSegue.Equals(segueIdentifier))
+			{
+				return _selectedValue != null;
+			}
+			return base.ShouldPerformSegue(segueIdentifier, sender);
+		}
+
+		public override void PrepareForSegue(UIStoryboardSegue segue, NSObject sender)
+		{
+			if (StoryboardId.SearchAgainSegue.Equals(segue.Identifier))
+			{
+				var searchTweetsViewController = segue.DestinationViewController.ContentViewController() as TweetTableViewController;
+				searchTweetsViewController.SearchText = _selectedValue;
+			}
+			else if (StoryboardId.ViewZoomedImageSegue.Equals(segue.Identifier))
+			{
+				var searchTweetsViewController = segue.DestinationViewController.ContentViewController() as ZoomedImageViewController;
+				searchTweetsViewController.ImageURL = new Uri( _selectedValue);
+			}
+			else
+			{
+				base.PrepareForSegue(segue, sender);
+			}
+		}
+		#endregion
+
+		class TweetImage
+		{
+			public string Url { get; set; }
+			public int Height { get; set; }
+			public int Width { get; set; }
+		}
+
+		class TweetUrl
+		{
+			public string DisplayUrl { get; set; }
+			public string RealUrl { get; set; }
+		}
+
 	}
 }

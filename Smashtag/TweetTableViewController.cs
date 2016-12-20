@@ -11,7 +11,7 @@ namespace Smashtag
 {
 	public partial class TweetTableViewController : UITableViewController, IUITextFieldDelegate
 	{
-		public TweetTableViewController (IntPtr handle) : base (handle)
+		public TweetTableViewController(IntPtr handle) : base(handle)
 		{
 		}
 
@@ -58,20 +58,13 @@ namespace Smashtag
 
 			new System.Threading.Thread(new System.Threading.ThreadStart(() =>
 			{
-				var results = from sim in ctx.Status
-							  where sim.ScreenName == "MarouanBaamel" &&
-				                             sim.Type == StatusType.User
-		                            //&& sim.Count == 30
-							  select sim;
+				var srch = (from search in ctx.Search
+							where search.Type == SearchType.Search &&
 
-				var srch = results.ToList();//.SingleOrDefault();
-					//(from search in ctx.Search
-				 //       where search.Type == SearchType.Search &&
-
-					//	   search.Query == SearchText+ "-filter:retweets" &&
-					//	   search.Count == 100
-					// select search)					
-					//	.SingleOrDefault();
+							   search.Query == SearchText + "-filter:retweets" &&
+							   search.Count == 100
+							select search)
+				.SingleOrDefault().Statuses;
 				InvokeOnMainThread(() =>
 				{
 					_tweets.Insert(0, srch);
@@ -86,7 +79,7 @@ namespace Smashtag
 			TableView.EstimatedRowHeight = TableView.RowHeight;
 			TableView.RowHeight = UITableView.AutomaticDimension;
 
-			SearchText = "from:earth_pics";
+			//SearchText = "from:earth_pics";
 
 			//
 			searchTextField.Delegate = this;

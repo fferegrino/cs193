@@ -30,7 +30,7 @@
                                 <rect key="frame" x="0.0" y="58" width="375" height="121"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="sWd-e9-vCr" id="LgQ-Ug-oMK">
-                                    <rect key="frame" x="0.0" y="0.0" width="375" height="121"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="375" height="120"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
                                         <stackView opaque="NO" contentMode="scaleToFill" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="3c7-iI-85O">
@@ -119,11 +119,11 @@
                                 <rect key="frame" x="0.0" y="28" width="375" height="44"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="9lp-bq-ppE" id="0Al-9l-yWX">
-                                    <rect key="frame" x="0.0" y="0.0" width="342" height="43.5"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="342" height="43"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
                                         <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Title" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="2KT-xB-7Lc">
-                                            <rect key="frame" x="15" y="0.0" width="325" height="43.5"/>
+                                            <rect key="frame" x="15" y="0.0" width="325" height="43"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                             <nil key="textColor"/>
@@ -136,7 +136,7 @@
                                 <rect key="frame" x="0.0" y="72" width="375" height="44"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="x0Y-yS-BkM" id="rbN-V1-m9U">
-                                    <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="375" height="43"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
                                         <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="ct1-Id-1ZP">
@@ -160,10 +160,52 @@
                             <outlet property="delegate" destination="abn-oW-zFX" id="lI8-dC-iJf"/>
                         </connections>
                     </tableView>
+                    <connections>
+                        <segue destination="zRy-qb-gOW" kind="show" identifier="Search Again" id="gJE-TB-CAI"/>
+                        <segue destination="rbp-X1-87G" kind="show" identifier="View Zoomed Image" id="RHZ-2h-JKV"/>
+                    </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="5oT-SI-mdw" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1658.4000000000001" y="85.907046476761622"/>
+            <point key="canvasLocation" x="1794" y="81"/>
+        </scene>
+        <!--Zoomed Image View Controller-->
+        <scene sceneID="mha-1M-0my">
+            <objects>
+                <viewController id="rbp-X1-87G" customClass="ZoomedImageViewController" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="qQW-8Z-nNF"/>
+                        <viewControllerLayoutGuide type="bottom" id="Nhw-6V-mVJ"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="lps-vw-2Z8">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="DuD-QB-51o">
+                                <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                            </scrollView>
+                            <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="eFZ-EO-Mzz">
+                                <rect key="frame" x="177" y="323" width="20" height="20"/>
+                            </activityIndicatorView>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="DuD-QB-51o" firstAttribute="leading" secondItem="lps-vw-2Z8" secondAttribute="leading" id="0yh-03-d36"/>
+                            <constraint firstItem="DuD-QB-51o" firstAttribute="bottom" secondItem="Nhw-6V-mVJ" secondAttribute="top" id="9hW-a6-xGZ"/>
+                            <constraint firstAttribute="trailing" secondItem="DuD-QB-51o" secondAttribute="trailing" id="Cmj-br-xit"/>
+                            <constraint firstItem="DuD-QB-51o" firstAttribute="centerX" secondItem="eFZ-EO-Mzz" secondAttribute="centerX" id="NWb-GA-ZVY"/>
+                            <constraint firstItem="DuD-QB-51o" firstAttribute="centerY" secondItem="eFZ-EO-Mzz" secondAttribute="centerY" id="NuU-Dh-ZnD"/>
+                            <constraint firstItem="DuD-QB-51o" firstAttribute="top" secondItem="lps-vw-2Z8" secondAttribute="top" id="kly-ME-Pd5"/>
+                        </constraints>
+                    </view>
+                    <connections>
+                        <outlet property="scrollView" destination="DuD-QB-51o" id="l2s-lS-brz"/>
+                        <outlet property="spinner" destination="eFZ-EO-Mzz" id="gAl-km-87S"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="zqM-Zq-a6g" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="2728.8000000000002" y="80.50974512743629"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="eus-rj-1TA">
@@ -184,4 +226,7 @@
             <point key="canvasLocation" x="-154.40000000000001" y="81.409295352323838"/>
         </scene>
     </scenes>
+    <inferredMetricsTieBreakers>
+        <segue reference="gJE-TB-CAI"/>
+    </inferredMetricsTieBreakers>
 </document>
