@@ -56,8 +56,8 @@ namespace Smashtag
 
 
 			var plist = NSUserDefaults.StandardUserDefaults;
-			recentSearches.AddSearchTerm(SearchText);
-			var saved = recentSearches.Get();
+			RecentSearches.AddSearchTerm(SearchText);
+			var saved = RecentSearches.Get();
 			plist.SetString(saved, (Foundation.NSString)OtherId.RecentSearches);
 			plist.Synchronize();
 
@@ -70,7 +70,7 @@ namespace Smashtag
 							   search.Query == SearchText + "-filter:retweets" &&
 							   search.Count == 100
 							select search)
-				.SingleOrDefault().Statuses;
+ 					.SingleOrDefault().Statuses;
 				InvokeOnMainThread(() =>
 				{
 					_tweets.Insert(0, srch);
@@ -78,7 +78,24 @@ namespace Smashtag
 				});
 			})).Start();
 		}
-		RecentSearches recentSearches;
+
+
+		RecentSearches _recentSearches;
+		RecentSearches RecentSearches
+		{
+			get
+			{
+				if (_recentSearches == null)
+				{
+					var plist = NSUserDefaults.StandardUserDefaults;
+					_recentSearches = new RecentSearches();
+					var searches = plist.StringForKey(OtherId.RecentSearches);
+					_recentSearches.Load(searches);
+				}
+				return _recentSearches;
+			}
+		}
+
 		public override void ViewDidLoad()
 		{
 			base.ViewDidLoad();
@@ -86,11 +103,6 @@ namespace Smashtag
 			TableView.RowHeight = UITableView.AutomaticDimension;
 
 			// Get Shared User Defaults
-			var plist = NSUserDefaults.StandardUserDefaults;
-
-			var searches = plist.StringForKey(OtherId.RecentSearches);
-			recentSearches = new RecentSearches();
-			recentSearches.Load(searches);
 
 			searchTextField.Delegate = this;
 			searchTextField.Text = SearchText;

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 using Newtonsoft.Json;
 
@@ -20,7 +21,7 @@ namespace Smashtag
 			_searches.Enqueue(recentSearches);
 		}
 
-		public string[] Recent => _searches.ToArray();
+		public string[] Recent => _searches.Reverse().ToArray();
 
 		public string Get() => JsonConvert.SerializeObject( _searches);
 

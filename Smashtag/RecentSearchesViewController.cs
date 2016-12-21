@@ -73,6 +73,17 @@ namespace Smashtag
 
 			return cell;
 		}
+
+		public override void RowSelected(UITableView tableView, NSIndexPath indexPath)
+		{
+			var term = recent[indexPath.Row];
+			TabBarController.SelectedIndex = 0;
+			var vc = TabBarController.ViewControllers[0].ContentViewController() as TweetTableViewController;
+			if (vc != null)
+			{
+				vc.SearchText = term;
+			}
+		}
 		#endregion
 	}
 }
