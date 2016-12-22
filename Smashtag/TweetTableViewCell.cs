@@ -20,6 +20,45 @@ namespace Smashtag
 			set { _tweet = value; UpdateUI(); }
 		}
 
+		public Uri ImageURL
+		{
+			get;
+			set;
+		}
+
+		void FetchImage()
+		{
+			var url = ImageURL;
+			if (url != null)
+			{
+				new System.Threading.Thread(new System.Threading.ThreadStart(() =>
+				{
+					var contentsOfUrl = NSData.FromUrl(url);
+
+					InvokeOnMainThread(() =>
+					{
+						if (url == this.ImageURL)
+						{
+							var imageData = contentsOfUrl;
+							if (imageData != null)
+							{
+								tweetProfileImageView.Image = new UIImage(imageData);
+							}
+							else
+							{
+							}
+						}
+
+						else
+						{
+							// just so you can see in the console when this happens
+							System.Diagnostics.Debug.WriteLine($"ignored data returned from url {url}");
+						}
+					});
+				})).Start();
+			}
+		}
+
 		void UpdateUI()
 		{
 			tweetCreatedLabel.Text = Tweet.CreatedAt.ToShortTimeString();
@@ -29,8 +68,8 @@ namespace Smashtag
 
 			if (!String.IsNullOrEmpty(Tweet.User.ProfileImageUrl))
 			{
-				var imageData = NSData.FromUrl(new Uri(Tweet.User.ProfileImageUrl));
-				tweetProfileImageView.Image = new UIImage(imageData);
+				ImageURL = new Uri(Tweet.User.ProfileImageUrl);
+				FetchImage();
 			}
 		}
 
