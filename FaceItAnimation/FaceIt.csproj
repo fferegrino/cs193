@@ -124,6 +124,7 @@
       <DependentUpon>EmotionsViewController.cs</DependentUpon>
     </Compile>
     <Compile Include="BlinkingFaceViewController.cs" />
+    <Compile Include="EyeView.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />
 </Project>
