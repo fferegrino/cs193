@@ -25,8 +25,22 @@ namespace FaceIt
 		public bool EyesOpen
 		{
 			get { return _eyesOpen; }
-			set { _eyesOpen = value; SetNeedsDisplay(); }
+			set
+			{
+				UIView.Transition(
+					this,
+					0.2,
+					UIViewAnimationOptions.TransitionFlipFromTop,
+					() => 
+					{ 
+						_eyesOpen = value;
+						SetNeedsDisplay();
+					}, 
+					null);
+			}
 		}
+
+
 
 		public override void Draw(CoreGraphics.CGRect rect)
 		{
@@ -35,7 +49,7 @@ namespace FaceIt
 			{
 				path = UIBezierPath.FromOval(Bounds.Inset(LineWidth / 2, LineWidth / 2));
 			}
-			else 
+			else
 			{
 				path = new UIBezierPath();
 				path.MoveTo(new CGPoint(Bounds.GetMinX(), Bounds.GetMidY()));
