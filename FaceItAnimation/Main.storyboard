@@ -4,6 +4,7 @@
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
+        <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11757"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -119,7 +120,7 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
                 <tapGestureRecognizer id="15">
                     <connections>
-                        <action selector="ToggleEyes:" destination="BYZ-38-t0r" id="17"/>
+                        <action selector="HeadShake:" destination="BYZ-38-t0r" id="ngi-a2-sy4"/>
                     </connections>
                 </tapGestureRecognizer>
             </objects>

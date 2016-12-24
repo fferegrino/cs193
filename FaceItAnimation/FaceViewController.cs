@@ -2,76 +2,115 @@
 using System;
 using System.Collections.Generic;
 using UIKit;
+using CoreGraphics;
 
 namespace FaceIt
 {
-    public partial class FaceViewController : UIViewController
-    {
-        public FaceViewController(IntPtr handle) : base(handle)
-        {
-        }
+	public partial class FaceViewController : UIViewController
+	{
+		public FaceViewController(IntPtr handle) : base(handle)
+		{
+		}
 
 
-        private FacialExpression _expression = new FacialExpression()
-        {
-            Eyes = Eyes.Open,
-            EyeBrows = EyeBrows.Furrowed,
-            Mouth = Mouth.Smile
-        };
+		private FacialExpression _expression = new FacialExpression()
+		{
+			Eyes = Eyes.Open,
+			EyeBrows = EyeBrows.Furrowed,
+			Mouth = Mouth.Smile
+		};
 
-        public FacialExpression Expression
-        {
-            get { return _expression; }
-            set { _expression = value; UpdateUI(); }
-        }
+		public FacialExpression Expression
+		{
+			get { return _expression; }
+			set { _expression = value; UpdateUI(); }
+		}
 
-        Dictionary<Mouth, double> mouthCurvatures = new Dictionary<Mouth, double>
-        {
-            { Mouth.Frown, -1 },
-            { Mouth.Grin, 0.5 },
-            { Mouth.Smile, 1 },
-            { Mouth.Smirk, -0.5 },
-            { Mouth.Neutral, 0 },
-        };
+		Dictionary<Mouth, double> mouthCurvatures = new Dictionary<Mouth, double>
+		{
+			{ Mouth.Frown, -1 },
+			{ Mouth.Grin, 0.5 },
+			{ Mouth.Smile, 1 },
+			{ Mouth.Smirk, -0.5 },
+			{ Mouth.Neutral, 0 },
+		};
 
-        Dictionary<EyeBrows, double> eyeBrowsTilts = new Dictionary<EyeBrows, double>
-        {
-            { EyeBrows.Relaxed, 0.5 },
-            { EyeBrows.Furrowed, -0.5 },
-            { EyeBrows.Normal, 0 }
-        };
+		Dictionary<EyeBrows, double> eyeBrowsTilts = new Dictionary<EyeBrows, double>
+		{
+			{ EyeBrows.Relaxed, 0.5 },
+			{ EyeBrows.Furrowed, -0.5 },
+			{ EyeBrows.Normal, 0 }
+		};
 
-        FaceView _faceView;
-        [Outlet]
-        protected FaceView FaceView
-        {
-            get { return _faceView; }
-            set
-            {
-                _faceView = value;
-                // didSet:
-                var gesture = new UIPinchGestureRecognizer();
-                gesture.AddTarget(() => _faceView.ChangeScale(gesture));
-                _faceView.AddGestureRecognizer(gesture);
+		FaceView _faceView;
+		[Outlet]
+		protected FaceView FaceView
+		{
+			get { return _faceView; }
+			set
+			{
+				_faceView = value;
+				// didSet:
+				var gesture = new UIPinchGestureRecognizer();
+				gesture.AddTarget(() => _faceView.ChangeScale(gesture));
+				_faceView.AddGestureRecognizer(gesture);
 
-                var happierSwipeGestureRecognizer = new UISwipeGestureRecognizer();
-                happierSwipeGestureRecognizer.AddTarget(() => IncreaseHappiness());
-                happierSwipeGestureRecognizer.Direction = UISwipeGestureRecognizerDirection.Up;
-                _faceView.AddGestureRecognizer(happierSwipeGestureRecognizer);
+				var happierSwipeGestureRecognizer = new UISwipeGestureRecognizer();
+				happierSwipeGestureRecognizer.AddTarget(() => IncreaseHappiness());
+				happierSwipeGestureRecognizer.Direction = UISwipeGestureRecognizerDirection.Up;
+				_faceView.AddGestureRecognizer(happierSwipeGestureRecognizer);
 
-                var sadderSwipeGestureRecognizer = new UISwipeGestureRecognizer();
-                sadderSwipeGestureRecognizer.AddTarget(() => DecreaseHappiness());
-                sadderSwipeGestureRecognizer.Direction = UISwipeGestureRecognizerDirection.Down;
-                _faceView.AddGestureRecognizer(sadderSwipeGestureRecognizer);
+				var sadderSwipeGestureRecognizer = new UISwipeGestureRecognizer();
+				sadderSwipeGestureRecognizer.AddTarget(() => DecreaseHappiness());
+				sadderSwipeGestureRecognizer.Direction = UISwipeGestureRecognizerDirection.Down;
+				_faceView.AddGestureRecognizer(sadderSwipeGestureRecognizer);
 
 				var rotationGestureRecognizer = new UIRotationGestureRecognizer();
 				rotationGestureRecognizer.AddTarget(() => ChangeBrows(rotationGestureRecognizer));
 				//rotationGestureRecognizer.AddTarget(() => ChangeBrows(gesture));
 				_faceView.AddGestureRecognizer(rotationGestureRecognizer);
 
-                UpdateUI();
-            }
-        }
+				UpdateUI();
+			}
+		}
+
+		private struct Animation
+		{
+			public const float ShakeAngle = (float)(Math.PI / 6);
+			public const double ShakeDuration = 0.5;
+		}
+
+		partial void HeadShake(NSObject sender)
+		{
+			UIView.Animate(
+				Animation.ShakeDuration,
+				() =>
+				{
+					FaceView.Transform = CGAffineTransform.Rotate(FaceView.Transform, Animation.ShakeAngle);
+				},
+				() =>
+				{
+					UIView.Animate(
+						Animation.ShakeDuration,
+						() =>
+						{
+							FaceView.Transform = CGAffineTransform.Rotate(FaceView.Transform, -2 * Animation.ShakeAngle);
+						},
+						() =>
+						{
+							UIView.Animate(
+							Animation.ShakeDuration,
+							() =>
+							{
+								FaceView.Transform = CGAffineTransform.Rotate(FaceView.Transform, Animation.ShakeAngle);
+							},
+							() =>
+							{
+
+							});
+						});
+				});
+		}
 
 		partial void ToggleEyes(UITapGestureRecognizer recognizer)
 		{
@@ -90,7 +129,7 @@ namespace FaceIt
 						break;
 				}
 
-            	Expression = new FacialExpression
+				Expression = new FacialExpression
 				{
 					Mouth = Expression.Mouth,
 					EyeBrows = Expression.EyeBrows,
@@ -130,28 +169,28 @@ namespace FaceIt
 			};
 		}
 
-        private void IncreaseHappiness()
-        {
-            Expression = new FacialExpression
-            {
-                Mouth = Expression.Mouth.HappierMouth(),
-                EyeBrows = Expression.EyeBrows,
-                Eyes = Expression.Eyes
-            };
-        }
+		private void IncreaseHappiness()
+		{
+			Expression = new FacialExpression
+			{
+				Mouth = Expression.Mouth.HappierMouth(),
+				EyeBrows = Expression.EyeBrows,
+				Eyes = Expression.Eyes
+			};
+		}
 
-        private void DecreaseHappiness()
-        {
-            Expression = new FacialExpression
-            {
-                Mouth = Expression.Mouth.SadderMouth(),
-                EyeBrows = Expression.EyeBrows,
-                Eyes = Expression.Eyes
-            };
-        }
+		private void DecreaseHappiness()
+		{
+			Expression = new FacialExpression
+			{
+				Mouth = Expression.Mouth.SadderMouth(),
+				EyeBrows = Expression.EyeBrows,
+				Eyes = Expression.Eyes
+			};
+		}
 
-        void UpdateUI()
-        {
+		void UpdateUI()
+		{
 			if (FaceView != null)
 			{
 				switch (Expression.Eyes)
@@ -167,6 +206,6 @@ namespace FaceIt
 				FaceView.MouthCurvature = mouthCurvatures[Expression.Mouth];
 				FaceView.EyeBrowTilt = eyeBrowsTilts[Expression.EyeBrows];
 			}
-        }
-    }
+		}
+	}
 }
