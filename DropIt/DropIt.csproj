@@ -121,6 +121,7 @@
       <DependentUpon>DropItView.cs</DependentUpon>
     </Compile>
     <Compile Include="FallingObjectBehavior.cs" />
+    <Compile Include="NamedBezierPathsView.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />
 </Project>

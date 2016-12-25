@@ -9,7 +9,7 @@ using System.Collections.Generic;
 
 namespace DropIt
 {
-	public partial class DropItView : UIView, IUIDynamicAnimatorDelegate
+	public partial class DropItView : NamedBezierPathsView, IUIDynamicAnimatorDelegate
 	{
 		Random r = new Random();
 
@@ -17,10 +17,8 @@ namespace DropIt
 		{
 		}
 
-
 		UIDynamicAnimator _animator;
 		UIDynamicAnimator animator => _animator ?? (_animator = new UIDynamicAnimator(this) { Delegate = this });
-
 
 		public void WillResume(UIDynamicAnimator animator)
 		{
@@ -48,6 +46,22 @@ namespace DropIt
 					animator.RemoveBehavior(dropBehavior);
 				}
 			}
+		}
+
+		private struct PathNames
+		{
+			public const string MiddleBarrier = "Middle Barrier";
+		}
+
+		public override void LayoutSubviews()
+		{
+			base.LayoutSubviews();
+			var path = UIBezierPath.FromOval(new CGRect(new CGPoint(Bounds.GetMidX(), Bounds.GetMidY()), DropSize));
+			dropBehavior.AddBarrier(path, PathNames.MiddleBarrier);
+			BezierPaths = new Dictionary<string, UIBezierPath>
+			{
+				{PathNames.MiddleBarrier, path}
+			};
 		}
 
 		void RemoveCompletedRow()

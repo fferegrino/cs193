@@ -1,4 +1,5 @@
 ﻿using System;
+using Foundation;
 using UIKit;
 
 namespace DropIt
@@ -14,6 +15,13 @@ namespace DropIt
 		UIDynamicItemBehavior itemBehavior => _itemBehavior ?? (_itemBehavior = new UIDynamicItemBehavior
 		{ AllowsRotation = false,
 			Elasticity = 0.75f});
+
+		public void AddBarrier(UIBezierPath barrier, string name)
+		{
+			var id = new NSString(name);
+			collider.RemoveBoundary(id);
+			collider.AddBoundary(id, barrier);
+		}
 
 		public FallingObjectBehavior()
 		{
