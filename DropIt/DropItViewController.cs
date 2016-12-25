@@ -32,6 +32,8 @@ namespace DropIt
 					new UIPanGestureRecognizer(gameView.GrabDrop);
 				gameView.AddGestureRecognizer(pgr);
 
+				_gameView.RealGravity = true;
+
 			}
 		}
 

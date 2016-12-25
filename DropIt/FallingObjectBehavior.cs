@@ -7,7 +7,7 @@ namespace DropIt
 	public class FallingObjectBehavior : UIDynamicBehavior
 	{
 
-		UIGravityBehavior gravity = new UIGravityBehavior();
+		public UIGravityBehavior gravity = new UIGravityBehavior();
 		UICollisionBehavior _collider;
 		UICollisionBehavior collider => _collider ?? (_collider = new UICollisionBehavior
 		{ TranslatesReferenceBoundsIntoBoundary = true });

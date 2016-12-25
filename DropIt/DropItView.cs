@@ -7,6 +7,7 @@ using Foundation;
 using UIKit;
 using CoreGraphics;
 using System.Collections.Generic;
+using CoreMotion;
 
 namespace DropIt
 {
@@ -48,6 +49,52 @@ namespace DropIt
 				{
 					animator.RemoveBehavior(dropBehavior);
 				}
+			}
+		}
+
+		private bool _realGravity;
+		public bool RealGravity
+		{
+			get { return _realGravity; }
+			set { _realGravity = value;
+				UpdateRealGravity();
+			}
+		}
+
+		CMMotionManager motionManager = new CMMotionManager();
+		void UpdateRealGravity()
+		{
+			if (_realGravity)
+			{
+				if (motionManager.AccelerometerAvailable && !motionManager.AccelerometerActive)
+				{
+					motionManager.AccelerometerUpdateInterval = 0.25;
+					motionManager.StartAccelerometerUpdates(NSOperationQueue.MainQueue, (data, error) => 
+					{
+						if (dropBehavior.DynamicAnimator != null)
+						{
+							var dx = data?.Acceleration.X;
+							var dy = data?.Acceleration.Y;
+							if (dx != null && dy != null)
+							{
+								switch (UIDevice.CurrentDevice.Orientation)
+								{
+									case UIDeviceOrientation.Portrait: dy = -dy; break;
+									case UIDeviceOrientation.PortraitUpsideDown: break;
+									case UIDeviceOrientation.LandscapeLeft: // Swap break;
+									case UIDeviceOrientation.LandscapeRight: // Swap - dy = -dy; break;
+									default:
+										break;
+								}
+								dropBehavior.gravity.GravityDirection = new CGVector((System.nfloat)dx, (System.nfloat)dy);
+							}
+						}
+					});
+				}
+			}
+			else 
+			{
+				motionManager.StopAccelerometerUpdates();
 			}
 		}
 
