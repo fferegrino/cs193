@@ -11,11 +11,25 @@ namespace DropIt
 		{
 		}
 
-		Dictionary<string, UIBezierPath> _bezierPaths; 
-		internal Dictionary<string, UIBezierPath> BezierPaths
+		Dictionary<string, UIBezierPath> _bezierPaths = new Dictionary<string, UIBezierPath>(); 
+		Dictionary<string, UIBezierPath> BezierPaths
 		{
 			get { return _bezierPaths; }
-			set { _bezierPaths = value; SetNeedsDisplay();}
+			set { _bezierPaths = value; }
+		}
+
+		public void AddBeizerPath(string name, UIBezierPath path)
+		{
+			if (BezierPaths.ContainsKey(name)) 
+				BezierPaths.Remove(name);
+			BezierPaths.Add(name, path);
+			SetNeedsDisplay();
+		}
+
+		public void RemoveBezierPath(string name)
+		{
+			BezierPaths.Remove(name);
+			SetNeedsDisplay();
 		}
 
 		public override void Draw(CGRect rect)

@@ -26,8 +26,12 @@ namespace DropIt
 				_gameView = value;
 
 				UITapGestureRecognizer tgr = new UITapGestureRecognizer(AddDrop);
-
 				_gameView.AddGestureRecognizer(tgr);
+
+				UIPanGestureRecognizer pgr =
+					new UIPanGestureRecognizer(gameView.GrabDrop);
+				gameView.AddGestureRecognizer(pgr);
+
 			}
 		}
 
